@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+/* Tokens exposed to Tailwind: bg-bg, text-muted, border-line, font-display... */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-vis: var(--vis);
+  --color-bad: var(--bad);
+  --font-display: var(--display);
+  --font-body: var(--body);
+  --font-mono: var(--mono);
+}
+
+/* Dark-first: charcoal with pastel lavender + sage, light variant mirrors it */
+:root {
+  --bg: #121318;
+  --surface: #1a1b22;
+  --line: #2a2b35;
+  --fg: #e9e6ef;
+  --muted: #9895a6;
+  --accent: #c4b5e8;
+  --accent-2: #a9c9b8;
+  --vis: #16171f;
+  --bad: #ef8fa0;
+  --display: "Shippori Mincho B1", "Hiragino Mincho ProN", Georgia, serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, ui-monospace, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f4f8; --surface: #ffffff; --line: #e0dde8; --fg: #1c1b24; --muted: #6a6778;
+    --accent: #6b55a8; --accent-2: #3f7a5e; --vis: #ecebf3; --bad: #b8344d;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f5f4f8; --surface: #ffffff; --line: #e0dde8; --fg: #1c1b24; --muted: #6a6778;
+  --accent: #6b55a8; --accent-2: #3f7a5e; --vis: #ecebf3; --bad: #b8344d;
+  color-scheme: light;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+:root { --gutter-x: max(clamp(20px, 5vw, 96px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
+.gutter {
+  padding-left: max(clamp(20px, 5vw, 96px), env(safe-area-inset-left, 0px));
+  padding-right: max(clamp(20px, 5vw, 96px), env(safe-area-inset-right, 0px));
+}
+.safe-top-band {
+  position: fixed; inset: 0 0 auto; z-index: 31;
+  height: env(safe-area-inset-top, 0px); background: var(--bg);
+}
+
+/* Easter egg "shadow mode": crimson accent (theme.ts) */
+:root[data-mode="shadow"] { --accent: #ef5b73; --accent-2: #f2a7b3; }
+@media (prefers-color-scheme: light) {
+  :root[data-mode="shadow"]:not([data-theme="dark"]) { --accent: #b3203f; --accent-2: #8e3a4c; }
+}
+:root[data-mode="shadow"][data-theme="light"] { --accent: #b3203f; --accent-2: #8e3a4c; }
+
+/* Smooth scrolling (lenis) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Sound toggle bars */
+.sound-bar { height: 3px; transition: height .3s; }
+@media (prefers-reduced-motion: no-preference) {
+  .sound-bar.is-on { animation: eq 0.9s ease-in-out infinite alternate; }
+}
+.sound-bar.is-on { height: 100%; }
+@keyframes eq { 0% { height: 25%; } 50% { height: 100%; } 100% { height: 45%; } }
+
+/* Spinning record (Inspirations) */
+.record {
+  background:
+    radial-gradient(circle, transparent 30%, color-mix(in srgb, var(--fg) 6%, transparent) 31%, transparent 32%),
+    repeating-radial-gradient(circle, var(--surface) 0 3px, color-mix(in srgb, var(--surface) 70%, var(--bg)) 3px 5px);
+}
+.record::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 20deg, transparent 0 40deg, color-mix(in srgb, var(--accent) 18%, transparent) 60deg, transparent 80deg 220deg, color-mix(in srgb, var(--fg) 8%, transparent) 240deg, transparent 260deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .record { animation: spin 9s linear infinite; }
+}
+@keyframes spin { to { rotate: 360deg; } }
+
+/* Tech marquee */
+.marquee { display: flex; width: max-content; }
+@media (prefers-reduced-motion: no-preference) {
+  .marquee { animation: marquee 38s linear infinite; }
+  .marquee-wrap:hover .marquee { animation-play-state: paused; }
+}
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* Loader: the glyph outline draws itself */
+.loader-glyph {
+  fill: transparent; stroke-dasharray: 1600; stroke-dashoffset: 1600;
+  animation: draw 3.4s cubic-bezier(.45, 0, .2, 1) forwards, glyph-fill 1.2s ease 3s forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes glyph-fill { to { fill: color-mix(in srgb, var(--accent) 22%, transparent); } }
+a { color: inherit; text-decoration: none; }
+
+/* Theme switch: the new theme grows as a circle from the toggle button */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: theme-reveal .7s cubic-bezier(.2, .8, .2, 1); }
+@keyframes theme-reveal {
+  from { clip-path: circle(0 at var(--vt-x, 100%) var(--vt-y, 0)); }
+  to { clip-path: circle(150vmax at var(--vt-x, 100%) var(--vt-y, 0)); }
+}
+
+/* Custom cursor (components/Cursor.tsx) */
+.has-cursor, .has-cursor * { cursor: none !important; }
+.cursor-dot, .cursor-ring {
+  position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none;
+  transition: opacity .3s;
+}
+.cursor-dot {
+  width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+  background: var(--accent);
+}
+.cursor-ring {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .12em;
+  color: transparent;
+  transition: width .35s cubic-bezier(.2, .8, .2, 1), height .35s cubic-bezier(.2, .8, .2, 1),
+              background-color .35s, border-color .35s, color .2s, opacity .3s;
+}
+.cursor-ring[data-state="link"] {
+  width: 56px; height: 56px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.cursor-ring[data-state="card"] {
+  width: 88px; height: 88px;
+  background: var(--accent); border-color: var(--accent); color: var(--bg);
+}
+.cursor-dot[data-state="card"] { opacity: 0; }
+.cursor-dot[data-hidden="true"], .cursor-ring[data-hidden="true"] { opacity: 0; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }

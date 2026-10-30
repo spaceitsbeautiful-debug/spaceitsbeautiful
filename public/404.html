@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Page introuvable · Gounteni David</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Manrope:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" />
+    <style>
+      :root {
+        --bg: #121318; --fg: #e9e6ef; --muted: #9895a6; --line: #2a2b35; --accent: #c4b5e8;
+        color-scheme: dark;
+      }
+      @media (prefers-color-scheme: light) {
+        :root { --bg: #f5f4f8; --fg: #1c1b24; --muted: #6a6778; --line: #e0dde8; --accent: #6b55a8; color-scheme: light; }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100svh; display: grid; place-items: center; text-align: center;
+        background: var(--bg); color: var(--fg); font-family: "Manrope", system-ui, sans-serif;
+        padding: 32px max(20px, env(safe-area-inset-left, 0px)) 32px max(20px, env(safe-area-inset-right, 0px));
+      }
+      main { display: grid; justify-items: center; gap: 20px; }
+      .glyph { font-family: "Shippori Mincho B1", serif; font-weight: 800; font-size: clamp(140px, 30vw, 280px); line-height: 1; color: transparent; -webkit-text-stroke: 1.5px var(--accent); }
+      .code { font-family: "JetBrains Mono", monospace; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+      h1 { font-family: "Shippori Mincho B1", serif; font-size: clamp(28px, 5vw, 44px); margin: 0; }
+      p { margin: 0; color: var(--muted); max-width: 30em; }
+      a { margin-top: 8px; font-family: "JetBrains Mono", monospace; font-size: 14px; color: var(--bg); background: var(--accent); padding: 12px 22px; border-radius: 999px; text-decoration: none; }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="glyph" aria-hidden="true">影</div>
+      <span class="code">Erreur 404</span>
+      <h1>Cette page s'est perdue dans l'ombre</h1>
+      <p>L'adresse est peut-être mal écrite, ou la page n'existe plus.</p>
+      <a href="./">Retour à l'accueil</a>
+    </main>
+  </body>
+</html>

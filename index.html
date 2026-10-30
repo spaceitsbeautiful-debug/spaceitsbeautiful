@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  影  Portfolio de Gounteni David · 2026
+  Conçu et développé par Gounteni David. Tous droits réservés.
+  Reproduction ou réutilisation interdites sans autorisation : voir LICENSE.
+-->
+<html lang="fr">
+  <head>
+    <meta name="author" content="Gounteni David" />
+    <meta name="copyright" content="© 2026 Gounteni David" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <meta name="description" content="Portfolio de Gounteni David, développeur full-stack : React, Node.js, Python et IA." />
+    <title>Gounteni David</title>
+    <script>
+      // Apply the saved theme before first paint so there is no flash
+      try {
+        var t = localStorage.getItem('theme')
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
