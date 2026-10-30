@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { categories, projects, type Category, type Project } from '../data/projects'
+import { categories, localize, projects, type Category, type Project } from '../data/projects'
+import { useLang, useT } from '../i18n'
 import Mock from './Mocks'
 import { Rich, Section, ease } from './ui'
 
@@ -11,7 +12,9 @@ const spans: Record<Project['size'], string> = {
   third: 'col-span-6 sm:col-span-3 lg:col-span-2',
 }
 
-function ProjectCard({ project: p, index, size }: { project: Project; index: number; size: Project['size'] }) {
+function ProjectCard({ project, index, size }: { project: Project; index: number; size: Project['size'] }) {
+  const t = useT()
+  const p = localize(project, useLang())
   const ref = useRef<HTMLElement>(null)
   const wide = size === 'wide'
 
@@ -56,7 +59,7 @@ function ProjectCard({ project: p, index, size }: { project: Project; index: num
         }`}
       >
         {p.featured && (
-          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-accent">Projet phare</span>
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-accent">{t('Projet phare', 'Main project')}</span>
         )}
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2">
           <h3
@@ -92,7 +95,7 @@ function ProjectCard({ project: p, index, size }: { project: Project; index: num
           href={`#${p.slug}`}
           className="mt-2 inline-flex w-fit items-center gap-2 font-mono text-[13px] text-fg after:absolute after:inset-0 after:z-[3] after:content-['']"
         >
-          Voir le projet
+          {t('Voir le projet', 'View project')}
           <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
             →
           </span>
@@ -109,14 +112,20 @@ function sizesFor(list: Project[], all: boolean): Project['size'][] {
 }
 
 export default function Projects() {
+  const t = useT()
   const [filter, setFilter] = useState<Category | 'all'>('all')
   const list = useMemo(() => (filter === 'all' ? projects : projects.filter((p) => p.categories.includes(filter))), [filter])
   const sizes = sizesFor(list, filter === 'all')
   const count = (id: Category | 'all') => (id === 'all' ? projects.length : projects.filter((p) => p.categories.includes(id)).length)
 
   return (
-    <Section id="projets" title="Projets" note={`${projects.length} projets · 2025–2026`} reveal={false}>
-      <div role="group" aria-label="Filtrer les projets" className="mb-8 flex flex-wrap gap-2">
+    <Section
+      id="projets"
+      title={t('Projets', 'Projects')}
+      note={`${projects.length} ${t('projets', 'projects')} · 2025–2026`}
+      reveal={false}
+    >
+      <div role="group" aria-label={t('Filtrer les projets', 'Filter projects')} className="mb-8 flex flex-wrap gap-2">
         {categories.map((c) => (
           <button
             key={c.id}
@@ -130,7 +139,7 @@ export default function Projects() {
             {filter === c.id && (
               <motion.span layoutId="filter-pill" className="absolute inset-0 -z-10 rounded-full bg-accent" transition={{ duration: 0.4, ease }} />
             )}
-            {c.label} <span className="opacity-60">{count(c.id)}</span>
+            {t(c.label, c.en)} <span className="opacity-60">{count(c.id)}</span>
           </button>
         ))}
       </div>

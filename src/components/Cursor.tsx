@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useT } from '../i18n'
 
 type State = 'default' | 'link' | 'card'
 
@@ -17,6 +18,7 @@ export default function Cursor() {
   const ring = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<State>('default')
   const [visible, setVisible] = useState(false)
+  const t = useT()
 
   useEffect(() => {
     if (!enabled) return
@@ -60,7 +62,7 @@ export default function Cursor() {
   return (
     <>
       <div ref={ring} className="cursor-ring" data-state={state} data-hidden={!visible} aria-hidden="true">
-        <span>Voir</span>
+        <span>{t('Voir', 'View')}</span>
       </div>
       <div ref={dot} className="cursor-dot" data-state={state} data-hidden={!visible} aria-hidden="true" />
     </>

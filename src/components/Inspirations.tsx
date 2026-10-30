@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion'
 import { inspirations } from '../data/site'
+import { useT } from '../i18n'
 import TrackPlayer from './TrackPlayer'
 import { Section, ease } from './ui'
 
 /** A typographic moodboard: anime with their Japanese titles, plus the track on repeat (playable). */
 export default function Inspirations() {
+  const t = useT()
   const { anime } = inspirations
   return (
-    <Section id="inspirations" title="Inspirations" note="ce qui nourrit mon univers" reveal={false}>
+    <Section id="inspirations" title="Inspirations" note={t('ce qui nourrit mon univers', 'what feeds my world')} reveal={false}>
       <div className="grid gap-[clamp(16px,2vw,28px)] lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <ul className="m-0 grid list-none grid-cols-1 gap-px overflow-hidden rounded-[18px] border border-line bg-line p-0 sm:grid-cols-2">
           {anime.map((a, i) => (
@@ -31,7 +33,7 @@ export default function Inspirations() {
               </span>
               <div className="relative grid gap-2">
                 <h3 className="m-0 font-display text-[clamp(22px,2.2vw,32px)] leading-tight font-bold">{a.title}</h3>
-                <p className="m-0 max-w-[30em] text-[15px] text-muted">{a.note}</p>
+                <p className="m-0 max-w-[30em] text-[15px] text-muted">{t(a.note, a.noteEn)}</p>
               </div>
             </motion.li>
           ))}

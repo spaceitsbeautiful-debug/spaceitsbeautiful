@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { projects, type Project } from '../data/projects'
+import { localize, projects, type Project } from '../data/projects'
+import { useLang, useT } from '../i18n'
 import { playSfx } from '../sound'
 import { startScroll, stopScroll } from '../smoothScroll'
 import Mock from './Mocks'
@@ -9,7 +10,10 @@ import { ease } from './ui'
 const pad = (n: number) => String(n).padStart(2, '0')
 
 /** Full-screen page for one project, opened from its card (#slug in the address). */
-export default function ProjectDetail({ project: p, onClose }: { project: Project; onClose: () => void }) {
+export default function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
+  const t = useT()
+  const lang = useLang()
+  const p = localize(project, lang)
   const scroller = useRef<HTMLDivElement>(null)
   const closeBtn = useRef<HTMLButtonElement>(null)
   const index = projects.findIndex((x) => x.slug === p.slug)
@@ -87,7 +91,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
           style={{ top: 'env(safe-area-inset-top, 0px)' }}
         >
           <button ref={closeBtn} type="button" onClick={onClose} className="text-muted transition-colors hover:text-fg">
-            ← Tous les projets
+            ← {t('Tous les projets', 'All projects')}
           </button>
           <span className="text-muted tabular-nums">
             {pad(index + 1)} / {pad(projects.length)}
@@ -152,7 +156,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
                   <motion.img
                     key={src}
                     src={src}
-                    alt={`${p.name}, capture ${i + 1}`}
+                    alt={`${p.name}, ${t('capture', 'screenshot')} ${i + 1}`}
                     loading="lazy"
                     initial={{ opacity: 0.3, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -168,7 +172,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
 
             <div className="grid gap-[clamp(40px,6vw,120px)] py-[clamp(48px,7vw,104px)] md:grid-cols-[1.5fr_1fr]">
               <div className="min-w-0">
-                <h2 className="m-0 mb-6 font-display text-[clamp(26px,3vw,40px)] font-bold">Ce que fait le projet</h2>
+                <h2 className="m-0 mb-6 font-display text-[clamp(26px,3vw,40px)] font-bold">{t('Ce que fait le projet', 'What it does')}</h2>
                 <ul className="m-0 grid list-none p-0">
                   {p.features.map((f) => (
                     <li key={f} className="flex gap-4 border-t border-line py-4 text-[clamp(16px,1.2vw,18px)]">
@@ -180,7 +184,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
               </div>
               <dl className="m-0 grid min-w-0 content-start gap-7">
                 <div className="grid gap-1.5">
-                  <dt className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-muted">Rôle</dt>
+                  <dt className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-muted">{t('Rôle', 'Role')}</dt>
                   <dd className="m-0 text-[17px]">{p.role}</dd>
                 </div>
                 <div className="grid gap-1.5">
@@ -188,7 +192,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
                   <dd className="m-0 text-[17px]">{p.kind}</dd>
                 </div>
                 <div className="grid gap-2.5">
-                  <dt className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-muted">Technologies</dt>
+                  <dt className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-muted">{t('Technologies', 'Tech')}</dt>
                   <dd className="m-0 flex flex-wrap gap-1.5">
                     {p.tags.map((t) => (
                       <span key={t} className="tag-accent rounded-full border px-[9px] py-[3px] font-mono text-xs">
@@ -206,7 +210,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
                         rel="noopener"
                         className="rounded-full bg-accent px-5 py-2.5 font-mono text-[13px] text-bg transition-transform hover:-translate-y-px"
                       >
-                        Tester l'appli ↗
+                        {t("Tester l'appli", 'Try the app')} ↗
                       </a>
                     )}
                     {p.links.code && (
@@ -216,7 +220,7 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
                         rel="noopener"
                         className="rounded-full border border-line px-5 py-2.5 font-mono text-[13px] transition-colors hover:border-accent"
                       >
-                        Voir le code ↗
+                        {t('Voir le code', 'View the code')} ↗
                       </a>
                     )}
                   </div>
@@ -226,11 +230,11 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
           </motion.div>
         </AnimatePresence>
 
-        <nav aria-label="Autres projets" className="grid grid-cols-2 border-t border-line">
+        <nav aria-label={t('Autres projets', 'Other projects')} className="grid grid-cols-2 border-t border-line">
           <a href={`#${prev.slug}`} onClick={go(prev.slug)} className="group grid min-w-0 content-start gap-2 py-10 pr-4">
-            <span className="font-mono text-xs text-muted">← Précédent</span>
+            <span className="font-mono text-xs text-muted">← {t('Précédent', 'Previous')}</span>
             <span className="font-display text-[clamp(20px,3vw,44px)] leading-tight font-bold transition-colors group-hover:text-accent">
-              {prev.name}
+              {localize(prev, lang).name}
             </span>
           </a>
           <a
@@ -238,9 +242,9 @@ export default function ProjectDetail({ project: p, onClose }: { project: Projec
             onClick={go(next.slug)}
             className="group grid min-w-0 content-start justify-items-end gap-2 border-l border-line py-10 pl-4 text-right"
           >
-            <span className="font-mono text-xs text-muted">Suivant →</span>
+            <span className="font-mono text-xs text-muted">{t('Suivant', 'Next')} →</span>
             <span className="font-display text-[clamp(20px,3vw,44px)] leading-tight font-bold transition-colors group-hover:text-accent">
-              {next.name}
+              {localize(next, lang).name}
             </span>
           </a>
         </nav>

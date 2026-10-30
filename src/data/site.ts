@@ -17,18 +17,19 @@ import {
 } from 'simple-icons'
 
 // Everything about the site that is not a project lives here.
+// French texts first; the English version sits next to them (`en`, `meaningEn`...).
 
 /** Profile picture: put the image in public/ (e.g. public/avatar.png) and write its name here. Empty = 影 monogram. */
 export const avatar = 'avatar.webp'
 
 /** Kanji the hero particles cycle through, with their reading and meaning. */
 export const heroGlyphs = [
-  { kanji: '影', reading: 'kage', meaning: "l'ombre" },
-  { kanji: '夢', reading: 'yume', meaning: 'le rêve' },
-  { kanji: '炎', reading: 'honō', meaning: 'la flamme' },
-  { kanji: '創', reading: 'sō', meaning: 'créer' },
-  { kanji: '黒', reading: 'kuro', meaning: 'le noir' },
-  { kanji: '心', reading: 'kokoro', meaning: "le cœur, l'esprit" },
+  { kanji: '影', reading: 'kage', meaning: "l'ombre", meaningEn: 'shadow' },
+  { kanji: '夢', reading: 'yume', meaning: 'le rêve', meaningEn: 'dream' },
+  { kanji: '炎', reading: 'honō', meaning: 'la flamme', meaningEn: 'flame' },
+  { kanji: '創', reading: 'sō', meaning: 'créer', meaningEn: 'to create' },
+  { kanji: '黒', reading: 'kuro', meaning: 'le noir', meaningEn: 'black' },
+  { kanji: '心', reading: 'kokoro', meaning: "le cœur, l'esprit", meaningEn: 'heart, mind' },
 ]
 
 /** Contact channels: leave a value empty ('') to hide it. */
@@ -44,14 +45,14 @@ export const contact = {
   email: '', // une adresse dédiée au portfolio, pas ton mail perso
 }
 
-export type StackItem = { name: string; role: string; icon?: SimpleIcon }
+export type StackItem = { name: string; role: string; roleEn?: string; icon?: SimpleIcon }
 
-export const stack: { group: string; items: StackItem[] }[] = [
+export const stack: { group: string; groupEn?: string; items: StackItem[] }[] = [
   {
     group: 'Frontend',
     items: [
       { name: 'React', role: 'UI', icon: siReact },
-      { name: 'TypeScript', role: 'typage', icon: siTypescript },
+      { name: 'TypeScript', role: 'typage', roleEn: 'typing', icon: siTypescript },
       { name: 'Vite', role: 'build', icon: siVite },
       { name: 'Tailwind CSS', role: 'style', icon: siTailwindcss },
     ],
@@ -59,21 +60,22 @@ export const stack: { group: string; items: StackItem[] }[] = [
   {
     group: 'Backend',
     items: [
-      { name: 'Node.js', role: 'serveur', icon: siNodedotjs },
+      { name: 'Node.js', role: 'serveur', roleEn: 'server', icon: siNodedotjs },
       { name: 'Express', role: 'API', icon: siExpress },
       { name: 'NestJS', role: 'API', icon: siNestjs },
       { name: 'Prisma', role: 'ORM', icon: siPrisma },
-      { name: 'PostgreSQL', role: 'BDD', icon: siPostgresql },
-      { name: 'SQLite', role: 'BDD', icon: siSqlite },
+      { name: 'PostgreSQL', role: 'BDD', roleEn: 'database', icon: siPostgresql },
+      { name: 'SQLite', role: 'BDD', roleEn: 'database', icon: siSqlite },
     ],
   },
   {
     group: 'Python & IA',
+    groupEn: 'Python & AI',
     items: [
-      { name: 'Python', role: 'outils', icon: siPython },
+      { name: 'Python', role: 'outils', roleEn: 'tools', icon: siPython },
       { name: 'Google GenAI', role: 'LLM', icon: siGooglegemini },
-      { name: 'mT5', role: 'traduction', icon: siHuggingface },
-      { name: 'ElevenLabs', role: 'voix', icon: siElevenlabs },
+      { name: 'mT5', role: 'traduction', roleEn: 'translation', icon: siHuggingface },
+      { name: 'ElevenLabs', role: 'voix', roleEn: 'voice', icon: siElevenlabs },
     ],
   },
 ]
@@ -81,12 +83,12 @@ export const stack: { group: string; items: StackItem[] }[] = [
 /** "Inspirations" section: anime, characters and music. */
 export const inspirations = {
   anime: [
-    { title: 'Fire Force', jp: '炎炎ノ消防隊', note: 'Benimaru Shinmon, mon personnage préféré. Et le travail sonore de David Production.' },
-    { title: 'The Eminence in Shadow', jp: '陰の実力者になりたくて！', note: "Shadow, et toute l'esthétique de l'ombre qui a inspiré ce site." },
-    { title: 'Naruto', jp: 'ナルト', note: 'Madara Uchiha et Minato Namikaze.' },
-    { title: 'One Piece', jp: 'ワンピース', note: "L'aventure au long cours." },
-    { title: 'Sword Art Online', jp: 'ソードアート・オンライン', note: 'Kirito, et des mondes virtuels à construire.' },
-    { title: 'Saga of Tanya the Evil', jp: '幼女戦記', note: 'Stratégie, discipline, personnage hors norme.' },
+    { title: 'Fire Force', jp: '炎炎ノ消防隊', note: 'Benimaru Shinmon, mon personnage préféré. Et le travail sonore de David Production.', noteEn: 'Benimaru Shinmon, my favourite character. And the sound work of David Production.' },
+    { title: 'The Eminence in Shadow', jp: '陰の実力者になりたくて！', note: "Shadow, et toute l'esthétique de l'ombre qui a inspiré ce site.", noteEn: 'Shadow, and the whole aesthetic of darkness that inspired this site.' },
+    { title: 'Naruto', jp: 'ナルト', note: 'Madara Uchiha et Minato Namikaze.', noteEn: 'Madara Uchiha and Minato Namikaze.' },
+    { title: 'One Piece', jp: 'ワンピース', note: "L'aventure au long cours.", noteEn: 'The long-haul adventure.' },
+    { title: 'Sword Art Online', jp: 'ソードアート・オンライン', note: 'Kirito, et des mondes virtuels à construire.', noteEn: 'Kirito, and virtual worlds to build.' },
+    { title: 'Saga of Tanya the Evil', jp: '幼女戦記', note: 'Stratégie, discipline, personnage hors norme.', noteEn: 'Strategy, discipline, an extraordinary lead.' },
   ],
   /**
    * The track behind the record. Royalty-free (Pixabay Content License): the file lives in
@@ -103,29 +105,40 @@ export const inspirations = {
 }
 
 /** Steps of the "Parcours" timeline, oldest first. */
-export const journey = [
+export const journey: { title: string; titleEn: string; text: string; textEn: string; tags: string[]; tagsEn?: string[] }[] = [
   {
     title: 'Les débuts',
+    titleEn: 'The beginning',
+    textEn: 'I started my software development training. First scripts, first basics: variables, loops, functions.',
+    tagsEn: ['Python', 'Algorithms'],
     text: 'Début de ma formation en développement logiciel. Premiers scripts, premières bases : variables, boucles, fonctions.',
     tags: ['Python', 'Algorithmique'],
   },
   {
     title: 'Python et IA',
+    titleEn: 'Python and AI',
+    textEn: 'Kurumi, my desktop voice assistant: voice recognition, AI-generated answers, speech synthesis.',
     text: "Kurumi, mon assistant vocal de bureau : reconnaissance de la voix, réponses générées par l'IA, synthèse vocale.",
     tags: ['Python', 'Google GenAI', 'CustomTkinter'],
   },
   {
     title: 'Le passage au full-stack',
+    titleEn: 'Going full-stack',
+    textEn: 'React, TypeScript, Node and databases. Nativia brings all of it together, plus a machine learning pipeline to translate Ewe.',
     text: "React, TypeScript, Node et les bases de données. Nativia réunit tout ça, avec en plus un pipeline de machine learning pour traduire l'éwé.",
     tags: ['React', 'Express', 'Prisma', 'mT5'],
   },
   {
     title: 'Développeur chez Matrix Industrie',
+    titleEn: 'Developer at Matrix Industrie',
+    textEn: "I work on the company's interfaces, databases and internal tools, including the client portal.",
     text: "Je travaille sur les interfaces, les bases de données et les outils internes de l'entreprise, dont le portail client.",
     tags: ['React', 'TypeScript', 'PostgreSQL'],
   },
   {
     title: "Aujourd'hui",
+    titleEn: 'Today',
+    textEn: 'Optimus Save, the specification of a bank queue system, and this portfolio built with React and Three.js.',
     text: 'Optimus Save, la spécification d\'un système de file d\'attente bancaire, et ce portfolio en React et Three.js.',
     tags: ['Node.js', 'Three.js', 'Framer Motion'],
   },

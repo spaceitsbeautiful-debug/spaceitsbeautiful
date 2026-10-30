@@ -20,6 +20,7 @@ import EasterEggs from './components/EasterEggs'
 import Toaster from './components/Toaster'
 import { installSoundListeners } from './sound'
 import { initSmoothScroll } from './smoothScroll'
+import { useT } from './i18n'
 
 const projectFromHash = () => projects.find((p) => p.slug === decodeURIComponent(location.hash.slice(1))) ?? null
 
@@ -41,6 +42,7 @@ export default function App() {
   const projectRef = useRef(project)
   projectRef.current = project
   const openedFromPage = useRef(false)
+  const t = useT()
 
   useEffect(() => initSmoothScroll(), [])
   useEffect(() => installSoundListeners(), [])
@@ -71,7 +73,7 @@ export default function App() {
         href="#projets"
         className="sr-only z-[90] rounded-full bg-accent px-4 py-2 font-mono text-sm text-bg focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       >
-        Aller au contenu
+        {t('Aller au contenu', 'Skip to content')}
       </a>
       <Loader />
       <ScrollProgress />

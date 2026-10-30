@@ -1,9 +1,11 @@
+import { useT } from '../i18n'
 import { toggleSound, useSoundEnabled } from '../sound'
 
 /** Sound on/off. The bars move while sound is on. */
 export default function SoundToggle() {
   const on = useSoundEnabled()
-  const label = on ? 'Couper le son' : 'Activer le son'
+  const t = useT()
+  const label = on ? t('Couper le son', 'Mute') : t('Activer le son', 'Turn sound on')
   return (
     <button
       type="button"
@@ -22,7 +24,7 @@ export default function SoundToggle() {
           />
         ))}
       </span>
-      <span className="hidden font-mono text-[11px] uppercase tracking-[0.12em] sm:inline">{on ? 'Son' : 'Muet'}</span>
+      <span className="hidden font-mono text-[11px] uppercase tracking-[0.12em] sm:inline">{on ? t('Son', 'Sound') : t('Muet', 'Muted')}</span>
     </button>
   )
 }

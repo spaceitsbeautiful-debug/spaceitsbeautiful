@@ -1,7 +1,9 @@
 import { stack } from '../data/site'
+import { useT } from '../i18n'
 
 /** Full-width band of technologies scrolling in a loop (pauses on hover). */
 export default function Marquee() {
+  const t = useT()
   const items = stack.flatMap((g) => g.items)
   const row = (hidden: boolean) => (
     <ul aria-hidden={hidden || undefined} className="m-0 flex list-none items-center p-0">
@@ -24,7 +26,7 @@ export default function Marquee() {
   )
   return (
     <div className="marquee-wrap relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-y border-line py-[clamp(18px,2.4vw,32px)]">
-      <span className="sr-only">Technologies : {items.map((i) => i.name).join(', ')}</span>
+      <span className="sr-only">{t('Technologies', 'Technologies')} : {items.map((i) => i.name).join(', ')}</span>
       <div className="marquee" aria-hidden="true">
         {row(false)}
         {row(true)}

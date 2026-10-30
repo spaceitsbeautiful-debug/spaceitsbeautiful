@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { tr } from '../i18n'
 import { finishIntro } from '../intro'
 import { ease } from './ui'
 
@@ -14,7 +15,7 @@ export default function Loader() {
   const reduced = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const [show, setShow] = useState(!reduced.current)
   const [progress, setProgress] = useState(0)
-  const [status, setStatus] = useState('Chargement des polices')
+  const [status, setStatus] = useState(() => tr('Chargement des polices', 'Loading fonts'))
 
   useEffect(() => {
     if (reduced.current) {
@@ -34,9 +35,9 @@ export default function Loader() {
     const minDuration = seen ? 2500 : 4800
 
     const steps = [
-      { label: 'Chargement des polices', ready: false },
-      { label: 'Préparation de la scène 3D', ready: false },
-      { label: 'Derniers réglages', ready: false },
+      { label: tr('Chargement des polices', 'Loading fonts'), ready: false },
+      { label: tr('Préparation de la scène 3D', 'Preparing the 3D scene'), ready: false },
+      { label: tr('Derniers réglages', 'Final touches'), ready: false },
     ]
     const markReady = (i: number) => () => {
       steps[i].ready = true
@@ -65,7 +66,7 @@ export default function Loader() {
       if (target === 100 && shown > 99.4) shown = 100
       setProgress(shown)
       const pending = steps.find((s) => !s.ready)
-      setStatus(pending ? pending.label : 'Prêt')
+      setStatus(pending ? pending.label : tr('Prêt', 'Ready'))
 
       if (shown === 100 && !finished) {
         finished = true

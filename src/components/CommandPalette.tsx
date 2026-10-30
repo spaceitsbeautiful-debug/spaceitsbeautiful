@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { projects } from '../data/projects'
+import { localize, projects } from '../data/projects'
+import { getLang, tr, useLang } from '../i18n'
 import { contact } from '../data/site'
 import { toggleSound } from '../sound'
 import { toggleTheme } from '../theme'
+import { toggleLang } from '../i18n'
 import { kanjiRain, shadowMode } from './EasterEggs'
 import { ease } from './ui'
 
@@ -15,27 +17,30 @@ const go = (hash: string) => () => {
 
 function buildCommands(): Command[] {
   const sections: [string, string][] = [
-    ['hero', 'Accueil'],
-    ['projets', 'Projets'],
-    ['parcours', 'Parcours'],
+    ['hero', tr('Accueil', 'Home')],
+    ['projets', tr('Projets', 'Projects')],
+    ['parcours', tr('Parcours', 'Journey')],
     ['labs', 'Labs'],
     ['inspirations', 'Inspirations'],
     ['stack', 'Stack'],
-    ['apropos', 'À propos'],
+    ['apropos', tr('À propos', 'About')],
     ['contact', 'Contact'],
   ]
   const list: Command[] = [
-    ...sections.map(([id, label]) => ({ id: `s-${id}`, group: 'Aller à', label, run: go(id) })),
-    ...projects.map((p) => ({ id: `p-${p.slug}`, group: 'Projets', label: p.name, hint: p.kind, run: go(p.slug) })),
-    { id: 'theme', group: 'Réglages', label: 'Changer de thème (clair / sombre)', run: () => toggleTheme() },
-    { id: 'sound', group: 'Réglages', label: 'Activer / couper le son', run: toggleSound },
-    { id: 'rain', group: 'Secrets', label: 'Pluie de kanji', hint: 'ou tape « kage »', run: kanjiRain },
-    { id: 'shadow', group: 'Secrets', label: 'Mode Shadow', hint: '↑↑↓↓←→←→BA', run: shadowMode },
+    ...sections.map(([id, label]) => ({ id: `s-${id}`, group: tr('Aller à', 'Go to'), label, run: go(id) })),
+    ...projects
+      .map((p) => localize(p, getLang()))
+      .map((p) => ({ id: `p-${p.slug}`, group: tr('Projets', 'Projects'), label: p.name, hint: p.kind, run: go(p.slug) })),
+    { id: 'theme', group: tr('Réglages', 'Settings'), label: tr('Changer de thème (clair / sombre)', 'Change theme (light / dark)'), run: () => toggleTheme() },
+    { id: 'lang', group: tr('Réglages', 'Settings'), label: tr('Switch to English', 'Passer en français'), hint: 'FR / EN', run: toggleLang },
+    { id: 'sound', group: tr('Réglages', 'Settings'), label: tr('Activer / couper le son', 'Sound on / off'), run: toggleSound },
+    { id: 'rain', group: 'Secrets', label: tr('Pluie de kanji', 'Kanji rain'), hint: tr('ou tape « kage »', 'or type "kage"'), run: kanjiRain },
+    { id: 'shadow', group: 'Secrets', label: tr('Mode Shadow', 'Shadow mode'), hint: '↑↑↓↓←→←→BA', run: shadowMode },
   ]
   if (contact.instagram)
     list.push({
       id: 'insta',
-      group: 'Liens',
+      group: tr('Liens', 'Links'),
       label: 'Instagram',
       hint: `@${contact.instagram}`,
       run: () => window.open(`https://www.instagram.com/${contact.instagram}/`, '_blank', 'noopener'),
@@ -43,7 +48,7 @@ function buildCommands(): Command[] {
   if (contact.github)
     list.push({
       id: 'github',
-      group: 'Liens',
+      group: tr('Liens', 'Links'),
       label: 'GitHub',
       hint: contact.github,
       run: () => window.open(`https://github.com/${contact.github}`, '_blank', 'noopener'),
@@ -57,7 +62,9 @@ export default function CommandPalette() {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const input = useRef<HTMLInputElement>(null)
-  const commands = useMemo(buildCommands, [])
+  const lang = useLang()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const commands = useMemo(buildCommands, [lang])
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
@@ -124,7 +131,7 @@ export default function CommandPalette() {
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label="Palette de commandes"
+            aria-label={tr('Palette de commandes', 'Command palette')}
             onClick={(e) => e.stopPropagation()}
             onKeyDown={onKeyDown}
             initial={{ y: -16, scale: 0.98, opacity: 0 }}
@@ -142,7 +149,7 @@ export default function CommandPalette() {
                 id="palette-input"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Chercher une section, un projet, un réglage…"
+                placeholder={tr('Chercher une section, un projet, un réglage…', 'Search a section, a project, a setting…')}
                 role="combobox"
                 aria-expanded="true"
                 aria-controls="palette-list"
@@ -150,10 +157,10 @@ export default function CommandPalette() {
                 autoComplete="off"
                 className="h-14 flex-1 bg-transparent text-[15px] text-fg outline-none placeholder:text-muted"
               />
-              <kbd className="rounded border border-line px-1.5 py-0.5 font-mono text-[11px] text-muted">Échap</kbd>
+              <kbd className="rounded border border-line px-1.5 py-0.5 font-mono text-[11px] text-muted">{tr('Échap', 'Esc')}</kbd>
             </div>
             <ul id="palette-list" role="listbox" data-lenis-prevent className="m-0 max-h-[50vh] list-none overflow-y-auto p-2">
-              {results.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">Aucun résultat pour « {query} »</li>}
+              {results.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">{tr('Aucun résultat pour', 'No results for')} « {query} »</li>}
               {results.map((c, i) => {
                 const header = c.group !== lastGroup ? c.group : null
                 lastGroup = c.group
@@ -178,8 +185,8 @@ export default function CommandPalette() {
               })}
             </ul>
             <div className="flex gap-4 border-t border-line px-4 py-2.5 font-mono text-[11px] text-muted">
-              <span>↑↓ naviguer</span>
-              <span>↵ ouvrir</span>
+              <span>↑↓ {tr('naviguer', 'navigate')}</span>
+              <span>↵ {tr('ouvrir', 'open')}</span>
               <span className="ml-auto">Ctrl K</span>
             </div>
           </motion.div>

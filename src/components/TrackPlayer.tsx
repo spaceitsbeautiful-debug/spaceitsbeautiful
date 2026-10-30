@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { inspirations } from '../data/site'
+import { useT } from '../i18n'
 import { setExternalPlaying, useSoundEnabled } from '../sound'
 import { ease } from './ui'
 
@@ -14,6 +15,7 @@ export default function TrackPlayer() {
   const card = useRef<HTMLDivElement>(null)
   const audio = useRef<HTMLAudioElement>(null)
   const siteSound = useSoundEnabled()
+  const t = useT()
   const [playing, setPlaying] = useState(false)
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -71,7 +73,7 @@ export default function TrackPlayer() {
     a.currentTime = ((e.clientX - r.left) / r.width) * duration
   }
 
-  const label = playing ? `Mettre ${track.title} en pause` : `Écouter ${track.title}`
+  const label = playing ? t(`Mettre ${track.title} en pause`, `Pause ${track.title}`) : t(`Écouter ${track.title}`, `Play ${track.title}`)
 
   return (
     <motion.div
@@ -85,7 +87,7 @@ export default function TrackPlayer() {
       <audio ref={audio} src={track.src} preload="metadata" />
 
       <div className="flex items-center justify-between font-mono text-xs text-muted">
-        <span>{playing ? 'En lecture' : 'En boucle'}</span>
+        <span>{playing ? t('En lecture', 'Now playing') : t('En boucle', 'On repeat')}</span>
         <span aria-hidden="true" className="flex h-4 items-end gap-[3px] text-accent">
           {[0, 1, 2, 3, 4].map((i) => (
             <i
@@ -144,11 +146,11 @@ export default function TrackPlayer() {
           <div
             role="slider"
             tabIndex={0}
-            aria-label="Position dans le morceau"
+            aria-label={t('Position dans le morceau', 'Position in the track')}
             aria-valuemin={0}
             aria-valuemax={Math.round(duration)}
             aria-valuenow={Math.round(time)}
-            aria-valuetext={`${fmt(time)} sur ${fmt(duration)}`}
+            aria-valuetext={`${fmt(time)} ${t('sur', 'of')} ${fmt(duration)}`}
             onClick={seek}
             onKeyDown={seek}
             className="group/bar relative h-4 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
@@ -171,17 +173,17 @@ export default function TrackPlayer() {
 
         <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-muted">
           <a href={track.source} target="_blank" rel="noopener" className="transition-colors hover:text-fg">
-            Musique : {track.artist} · Pixabay ↗
+            {t('Musique', 'Music')} : {track.artist} · Pixabay ↗
           </a>
           {started && (
             <span>
               {playing
                 ? siteSound
-                  ? 'Musique du site en pause'
-                  : 'Lecture en cours'
+                  ? t('Musique du site en pause', 'Site music paused')
+                  : t('Lecture en cours', 'Playing')
                 : siteSound
-                  ? 'Musique du site reprise'
-                  : 'En pause'}
+                  ? t('Musique du site reprise', 'Site music back on')
+                  : t('En pause', 'Paused')}
             </span>
           )}
         </div>

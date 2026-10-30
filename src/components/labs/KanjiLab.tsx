@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
+import { useT } from '../../i18n'
 
 const GLYPHS = [
-  { k: '影', label: 'ombre' },
-  { k: '炎', label: 'flamme' },
-  { k: '黒', label: 'noir' },
-  { k: '夢', label: 'rêve' },
+  { k: '影', label: 'ombre', en: 'shadow' },
+  { k: '炎', label: 'flamme', en: 'flame' },
+  { k: '黒', label: 'noir', en: 'black' },
+  { k: '夢', label: 'rêve', en: 'dream' },
 ]
 const COUNT = 1400
 const FONT = '"Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif'
@@ -37,6 +38,7 @@ function sample(glyph: string): Float32Array {
 export default function KanjiLab() {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [glyph, setGlyph] = useState(0)
+  const t = useT()
   const targets = useRef<Float32Array | null>(null)
 
   useEffect(() => {
@@ -153,8 +155,8 @@ export default function KanjiLab() {
 
   return (
     <div className="grid gap-4">
-      <canvas ref={canvas} aria-label={`Le kanji ${GLYPHS[glyph].k} (${GLYPHS[glyph].label}) dessiné en particules`} className="aspect-[4/3] w-full max-w-full touch-none rounded-[14px] bg-vis" />
-      <div role="group" aria-label="Choisir un kanji" className="flex flex-wrap gap-2">
+      <canvas ref={canvas} aria-label={t(`Le kanji ${GLYPHS[glyph].k} (${GLYPHS[glyph].label}) dessiné en particules`, `The kanji ${GLYPHS[glyph].k} (${GLYPHS[glyph].en}) drawn in particles`)} className="aspect-[4/3] w-full max-w-full touch-none rounded-[14px] bg-vis" />
+      <div role="group" aria-label={t('Choisir un kanji', 'Pick a kanji')} className="flex flex-wrap gap-2">
         {GLYPHS.map((g, i) => (
           <button
             key={g.k}
@@ -166,7 +168,7 @@ export default function KanjiLab() {
             }`}
           >
             <span className="font-display text-lg font-bold">{g.k}</span>
-            <span className="font-mono text-xs opacity-75">{g.label}</span>
+            <span className="font-mono text-xs opacity-75">{t(g.label, g.en)}</span>
           </button>
         ))}
       </div>

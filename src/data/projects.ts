@@ -1,23 +1,24 @@
 // To add a project: add an entry here. **text** is shown in bold.
 // `visual` picks the illustration drawn in components/Mocks.tsx.
 // `slug` is the link to its detail page (#nativia, #kurumi...): letters, digits and dashes only.
+// Texts are in French; `en` holds the English version of the texts that change.
+
+import type { Lang } from '../i18n'
 
 export type Visual = 'nativia' | 'kurumi' | 'portal' | 'optimus' | 'queue' | 'kuro'
 
 export type Category = 'web' | 'ia' | 'python' | 'systemes' | 'design'
 
-export const categories: { id: Category | 'all'; label: string }[] = [
-  { id: 'all', label: 'Tous' },
-  { id: 'web', label: 'Web' },
-  { id: 'ia', label: 'IA' },
-  { id: 'python', label: 'Python' },
-  { id: 'systemes', label: 'Systèmes' },
-  { id: 'design', label: 'Design' },
+export const categories: { id: Category | 'all'; label: string; en: string }[] = [
+  { id: 'all', label: 'Tous', en: 'All' },
+  { id: 'web', label: 'Web', en: 'Web' },
+  { id: 'ia', label: 'IA', en: 'AI' },
+  { id: 'python', label: 'Python', en: 'Python' },
+  { id: 'systemes', label: 'Systèmes', en: 'Systems' },
+  { id: 'design', label: 'Design', en: 'Design' },
 ]
 
-export type Project = {
-  slug: string
-  categories: Category[]
+type Texts = {
   name: string
   kind: string
   description: string
@@ -25,6 +26,11 @@ export type Project = {
   features: string[]
   role: string
   tags: string[]
+}
+
+export type Project = Texts & {
+  slug: string
+  categories: Category[]
   visual: Visual
   size: 'wide' | 'half' | 'third'
   featured?: boolean
@@ -32,6 +38,12 @@ export type Project = {
   links?: { code?: string; demo?: string }
   /** Screenshots for the detail page: put the files in public/projects/ and list them here, e.g. 'projects/nativia-1.png' */
   images?: string[]
+  en: Partial<Texts>
+}
+
+/** The project with its texts in the given language. */
+export function localize(p: Project, lang: Lang): Project {
+  return lang === 'en' ? { ...p, ...p.en } : p
 }
 
 export const projects: Project[] = [
@@ -55,6 +67,20 @@ export const projects: Project[] = [
     visual: 'nativia',
     size: 'wide',
     featured: true,
+    en: {
+      kind: 'Web app · AI',
+      description:
+        'An app to **learn Ewe**, with Mochi, an AI companion that guides the learner. Translation by a **Google mT5** model trained in a Python pipeline, and pronunciation through speech synthesis.',
+      summary:
+        'Nativia helps people learn Ewe, a language spoken in Togo and Ghana, with lessons, the pronunciation of every word and an AI companion called Mochi.',
+      features: [
+        'Mochi, an AI companion that guides the learner through the lessons',
+        'Ewe translation by a Google mT5 model, trained in a Python pipeline',
+        'Pronunciation of words and sentences with ElevenLabs speech synthesis',
+        'React + TypeScript frontend, Express API with Prisma and SQLite',
+      ],
+      role: 'Full-stack design and development',
+    },
   },
   {
     slug: 'kurumi',
@@ -75,6 +101,19 @@ export const projects: Project[] = [
     tags: ['Python', 'CustomTkinter', 'Edge-TTS', 'SpeechRecognition', 'Pygame'],
     visual: 'kurumi',
     size: 'half',
+    en: {
+      kind: 'Voice assistant · Desktop',
+      description:
+        'A voice assistant for Windows: it listens, understands the request with **Google GenAI** and answers out loud, in a dark CustomTkinter interface.',
+      summary: 'Kurumi is a voice assistant for the Windows desktop: you talk to it, it understands and answers out loud.',
+      features: [
+        'Voice recognition with SpeechRecognition',
+        'Requests understood and answered by Google GenAI',
+        'Synthesized voice with Edge-TTS, sounds played with Pygame',
+        'Dark desktop interface built with CustomTkinter',
+      ],
+      role: 'Design and development',
+    },
   },
   {
     slug: 'portail-matrix',
@@ -92,6 +131,18 @@ export const projects: Project[] = [
     tags: ['React', 'TypeScript', 'Vite', 'Tailwind CSS'],
     visual: 'portal',
     size: 'half',
+    en: {
+      name: 'Matrix client portal',
+      kind: 'Work · Frontend',
+      description: "Matrix Industrie's client area: dashboard, request tracking and account management.",
+      summary: 'The portal where Matrix Industrie clients find their information and follow their requests.',
+      features: [
+        'React + TypeScript app, built with Vite',
+        'Interface styled with Tailwind CSS',
+        'Built as part of my job at Matrix Industrie',
+      ],
+      role: 'Frontend development',
+    },
   },
   {
     slug: 'optimus-save',
@@ -110,6 +161,13 @@ export const projects: Project[] = [
     links: { code: 'https://github.com/spaceitsbeautiful-debug/optimus-save' },
     visual: 'optimus',
     size: 'third',
+    en: {
+      kind: 'Tool · Cloud',
+      description: 'Cloud storage management with scheduled **automatic backups**, so no file is ever lost.',
+      summary: 'Optimus Save manages cloud storage and runs the backups on its own, without you having to think about it.',
+      features: ['Management of files stored in the cloud', 'Scheduled automatic backups', 'Tracking of every backup, folder by folder'],
+      role: 'Design and development',
+    },
   },
   {
     slug: 'file-attente',
@@ -130,6 +188,21 @@ export const projects: Project[] = [
     tags: ['Architecture', 'QR code', 'Impression thermique'],
     visual: 'queue',
     size: 'third',
+    en: {
+      name: 'Bank queue system',
+      kind: 'Specification',
+      description:
+        'A queue management system for a bank branch: **QR code** tickets, thermal printing and calling customers to the counters.',
+      summary: 'The full specification of a queue system for a bank branch, from the ticket handed to the customer to the call at the counter.',
+      features: [
+        'Ticketing with a QR code on every ticket',
+        'Tickets printed on a thermal printer',
+        'Customers called to the counters',
+        'Complete specification document, ready for development',
+      ],
+      role: 'Design and specification',
+      tags: ['Architecture', 'QR code', 'Thermal printing'],
+    },
   },
   {
     slug: 'kuro-talk',
@@ -147,5 +220,16 @@ export const projects: Project[] = [
     tags: ['Branding', 'UI'],
     visual: 'kuro',
     size: 'third',
+    en: {
+      kind: 'Messaging · Identity',
+      description: 'A messaging app, for which I worked on the name and the visual identity.',
+      summary: 'Kuro-Talk is a messaging app. On this project, I worked on the name and the visual identity.',
+      features: [
+        'Research and choice of the name',
+        'Visual identity: logo and graphic world',
+        'A dark mood, tied to "kuro", which means black in Japanese',
+      ],
+      role: 'Naming and visual identity',
+    },
   },
 ]

@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useT } from '../i18n'
 import { startScroll, stopScroll } from '../smoothScroll'
+import LangToggle from './LangToggle'
 import SoundToggle from './SoundToggle'
 import ThemeToggle from './ThemeToggle'
 import { ease } from './ui'
 
+// [section id, French label, English label]
 const links = [
-  ['projets', 'Projets'],
-  ['parcours', 'Parcours'],
-  ['labs', 'Labs'],
-  ['inspirations', 'Inspirations'],
-  ['stack', 'Stack'],
-  ['apropos', 'À propos'],
-  ['contact', 'Contact'],
+  ['projets', 'Projets', 'Projects'],
+  ['parcours', 'Parcours', 'Journey'],
+  ['labs', 'Labs', 'Labs'],
+  ['inspirations', 'Inspirations', 'Inspirations'],
+  ['stack', 'Stack', 'Stack'],
+  ['apropos', 'À propos', 'About'],
+  ['contact', 'Contact', 'Contact'],
 ] as const
 
 /** Id of the section crossing the upper third of the screen. */
@@ -41,6 +44,7 @@ function useActiveSection() {
 
 export default function Header() {
   const active = useActiveSection()
+  const t = useT()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -80,7 +84,7 @@ export default function Header() {
           </a>
           <div className="flex items-center gap-2 sm:gap-3">
             <nav aria-label="Sections" className="mr-2 hidden items-center gap-0.5 xl:flex">
-              {links.map(([id, label]) => (
+              {links.map(([id, fr, en]) => (
                 <a
                   key={id}
                   href={`#${id}`}
@@ -94,19 +98,22 @@ export default function Header() {
                       transition={{ duration: 0.45, ease }}
                     />
                   )}
-                  {label}
+                  {t(fr, en)}
                 </a>
               ))}
             </nav>
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event('open-palette'))}
-              aria-label="Ouvrir la palette de commandes (Ctrl K)"
-              title="Palette de commandes"
+              aria-label={t('Ouvrir la palette de commandes (Ctrl K)', 'Open the command palette (Ctrl K)')}
+              title={t('Palette de commandes', 'Command palette')}
               className="hidden h-9 items-center gap-1.5 rounded-full border border-line px-3 text-fg transition-colors hover:border-accent md:flex"
             >
               <kbd className="font-mono text-[11px]">Ctrl K</kbd>
             </button>
+            <span className="hidden sm:block">
+              <LangToggle />
+            </span>
             <SoundToggle />
             <ThemeToggle />
             <button
@@ -138,17 +145,20 @@ export default function Header() {
           >
             <div className="flex items-center justify-between py-4 font-mono text-[13px]">
               <span className="text-fg">gounteni<span className="text-accent">.</span>dev</span>
-              <button
-                type="button"
-                autoFocus
-                onClick={() => setMenuOpen(false)}
-                className="rounded-full border border-line px-3.5 py-1.5"
-              >
-                Fermer
-              </button>
+              <div className="flex items-center gap-2">
+                <LangToggle />
+                <button
+                  type="button"
+                  autoFocus
+                  onClick={() => setMenuOpen(false)}
+                  className="h-9 rounded-full border border-line px-3.5"
+                >
+                  {t('Fermer', 'Close')}
+                </button>
+              </div>
             </div>
             <nav aria-label="Sections" className="grid flex-1 content-center gap-1">
-              {links.map(([id, label], i) => (
+              {links.map(([id, fr, en], i) => (
                 <motion.a
                   key={id}
                   href={`#${id}`}
@@ -158,7 +168,7 @@ export default function Header() {
                   transition={{ duration: 0.5, ease, delay: 0.15 + i * 0.05 }}
                   className="flex items-baseline justify-between border-b border-line py-3 font-display text-[clamp(32px,9vw,56px)] font-bold"
                 >
-                  {label}
+                  {t(fr, en)}
                   <span aria-hidden="true" className="font-mono text-base text-muted">→</span>
                 </motion.a>
               ))}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { playSfx } from '../sound'
 import { toggleShadowMode } from '../theme'
+import { tr } from '../i18n'
 import { toast } from './Toaster'
 
 const RAIN = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン影夢炎黒創心'
@@ -18,7 +19,7 @@ export function kanjiRain() {
 export function shadowMode() {
   const on = toggleShadowMode()
   playSfx('burst')
-  toast(on ? '影 Mode Shadow activé' : 'Mode Shadow désactivé')
+  toast(on ? tr('影 Mode Shadow activé', '影 Shadow mode on') : tr('Mode Shadow désactivé', 'Shadow mode off'))
 }
 
 /**
@@ -74,7 +75,7 @@ export default function EasterEggs() {
     const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
     const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()
     playSfx('burst')
-    toast('影 kage · l’ombre envahit la page')
+    toast(tr('影 kage · l’ombre envahit la page', '影 kage · the shadow takes over the page'))
 
     const DURATION = reduced ? 1500 : 4200
     const start = performance.now()

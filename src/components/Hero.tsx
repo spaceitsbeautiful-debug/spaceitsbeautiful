@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { heroGlyphs } from '../data/site'
+import { useT } from '../i18n'
 import { useIntroDone } from '../intro'
 import { playSfx } from '../sound'
 import { INVISIBLE_SIGNATURE } from '../watermark'
@@ -32,11 +33,12 @@ function Line({ children, alt = false, delay = 0 }: { children: ReactNode; alt?:
   )
 }
 
+// [French label, English label, French value, English value]
 const meta = [
-  ['Actuellement', 'Matrix Industrie'],
-  ['Projet phare', 'Nativia'],
-  ['Spécialité', 'Frontend & BDD'],
-  ['Statut', 'Ouvert aux projets'],
+  ['Actuellement', 'Currently', 'Matrix Industrie', 'Matrix Industrie'],
+  ['Projet phare', 'Main project', 'Nativia', 'Nativia'],
+  ['Spécialité', 'Focus', 'Frontend & BDD', 'Frontend & databases'],
+  ['Statut', 'Status', 'Ouvert aux projets', 'Open to projects'],
 ]
 
 export default function Hero() {
@@ -44,6 +46,7 @@ export default function Hero() {
   const play = useIntroDone()
   const [glyph, setGlyph] = useState(0)
   const g = heroGlyphs[glyph]
+  const t = useT()
 
   return (
     <section
@@ -64,7 +67,7 @@ export default function Hero() {
 
       <div className="grid min-w-0 gap-[26px] self-center lg:max-w-[62%]">
         <motion.div {...rise(0.25, play)}>
-          <Eyebrow>Développeur full-stack</Eyebrow>
+          <Eyebrow>{t('Développeur full-stack', 'Full-stack developer')}</Eyebrow>
         </motion.div>
         <h1 className="m-0 grid font-display text-[clamp(58px,11vw,196px)] leading-[.9] font-extrabold tracking-[-0.035em]">
           <Line>Gounteni</Line>
@@ -73,7 +76,7 @@ export default function Hero() {
           </Line>
         </h1>
         <motion.p {...rise(0.3, play)} className="m-0 flex flex-wrap gap-y-2 font-mono text-[clamp(13px,1vw,15px)]">
-          {['React', 'Node.js', 'Python', 'IA'].map((s, i) => (
+          {['React', 'Node.js', 'Python', t('IA', 'AI')].map((s, i) => (
             <span key={s}>
               {i > 0 && <span className="mx-3.5 text-muted">/</span>}
               {s}
@@ -96,11 +99,11 @@ export default function Hero() {
                 >
                   <span className="font-display text-base font-bold text-accent">{g.kanji}</span>
                   <span className="text-fg">{g.reading}</span>
-                  <span>· {g.meaning}</span>
+                  <span>· {t(g.meaning, g.meaningEn)}</span>
                 </motion.span>
               </AnimatePresence>
             </p>
-            <span className="hidden [@media(hover:hover)]:block">passe la souris sur le kanji</span>
+            <span className="hidden [@media(hover:hover)]:block">{t('passe la souris sur le kanji', 'hover the kanji')}</span>
           </motion.div>
         )}
       </div>
@@ -110,15 +113,24 @@ export default function Hero() {
         className="grid grid-cols-1 items-end gap-x-[clamp(32px,5vw,88px)] gap-y-8 border-t border-line pt-7 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_auto]"
       >
         <p className="m-0 max-w-[32em] min-w-0 text-[clamp(16px,1.25vw,19px)] text-muted [&_strong]:font-semibold [&_strong]:text-fg">
-          Je construis des <strong>interfaces React</strong>, des <strong>API Node</strong> et des{' '}
-          <strong>outils en Python</strong>. Une appli pour apprendre l'éwé, un assistant vocal de bureau, un portail
-          client : j'aime les projets où le code sert{INVISIBLE_SIGNATURE} vraiment à quelqu'un.
+          {t(
+            <>
+              Je construis des <strong>interfaces React</strong>, des <strong>API Node</strong> et des{' '}
+              <strong>outils en Python</strong>. Une appli pour apprendre l'éwé, un assistant vocal de bureau, un portail
+              client : j'aime les projets où le code sert{INVISIBLE_SIGNATURE} vraiment à quelqu'un.
+            </>,
+            <>
+              I build <strong>React interfaces</strong>, <strong>Node APIs</strong> and <strong>Python tools</strong>. An
+              app to learn Ewe, a desktop voice assistant, a client portal: I like projects where the code is{INVISIBLE_SIGNATURE}{' '}
+              actually useful to someone.
+            </>,
+          )}
         </p>
         <dl className="m-0 grid min-w-0 grid-cols-2 gap-x-8 gap-y-[18px]">
-          {meta.map(([k, v]) => (
+          {meta.map(([k, kEn, v, vEn]) => (
             <div key={k} className="grid gap-1">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{k}</dt>
-              <dd className="m-0 text-[15px]">{v}</dd>
+              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{t(k, kEn)}</dt>
+              <dd className="m-0 text-[15px]">{t(v, vEn)}</dd>
             </div>
           ))}
         </dl>
@@ -126,7 +138,7 @@ export default function Hero() {
           href="#projets"
           className="scroll hidden flex-col items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-fg lg:flex"
         >
-          Projets
+          {t('Projets', 'Projects')}
         </a>
       </motion.div>
     </section>

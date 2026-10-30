@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { getLang, useLang, useT, type Lang } from '../../i18n'
 
 // A typing test inspired by Monkeytype: it counts every wrong keystroke (even corrected ones),
 // remembers which keys you miss, plots your speed second by second, and ends with tips
@@ -49,9 +50,53 @@ const PASSAGES = [
   },
 ]
 
+// The same kind of texts in English
+const PASSAGES_EN = [
+  {
+    title: 'The night developer',
+    text: "Night falls over the city. Screens light up one by one, and in a small bedroom, a young developer opens his editor. He doesn't know yet what he will build tonight, but he knows one thing: every line of code brings him a little closer to his ideas.",
+  },
+  {
+    title: 'The shadow',
+    text: 'A shadow is not the absence of light, it is the proof of it. Wherever something shines, a shadow appears right behind it, quiet and loyal. Maybe the best projects are born that way, in the calm, far from the noise.',
+  },
+  {
+    title: 'Like an instrument',
+    text: 'Learning to type fast is like learning an instrument. At first, your fingers hesitate and look for the keys. Then, with a little practice every day, the moves become natural and your thoughts go straight from your head to the screen.',
+  },
+  {
+    title: 'A well told story',
+    text: 'A good program reads like a well told story. Every function has a clear job, every variable has a name that says what it holds. When you read the code again six months later, you should understand it without effort.',
+  },
+  {
+    title: 'Fire',
+    text: 'Fire can destroy, but it can also warm and light the way. It all depends on who controls it. The same goes for technology: a tool is neither good nor bad, what really matters is how you use it.',
+  },
+  {
+    title: 'Rainy day',
+    text: 'This morning, the rain taps softly against the window. A cup of tea steams on the desk, music plays in the background, and the keyboard makes its steady little sound. Nothing beats a calm day to move a project forward.',
+  },
+  {
+    title: 'Another language',
+    text: 'Every language tells a way of seeing the world. Learning Ewe means discovering new sounds, old proverbs and a rich culture. An app can help, but nothing replaces curiosity and the wish to understand.',
+  },
+  {
+    title: 'The bug',
+    text: 'Mistakes are part of the road. A bug that resists for hours always ends up giving away its secret. And the day you find it, you often learn much more than when the code works on the first try.',
+  },
+  {
+    title: 'Lucid dream',
+    text: 'In a lucid dream, you know you are dreaming. You can fly over the rooftops, walk through walls or change the scenery with a single gesture. Coding sometimes gives the same feeling: creating a world that follows its own rules.',
+  },
+  {
+    title: 'Small habits',
+    text: 'To improve, you do not always need huge efforts. Fifteen push-ups in the morning, fifteen at night, a few minutes of typing a day, one more page of code. Small habits repeated over time are what build great results.',
+  },
+]
+
 /** A random passage, followed by others if needed so a fast typist never runs out of text. */
-function makeText(duration: number) {
-  const order = [...PASSAGES].sort(() => Math.random() - 0.5)
+function makeText(duration: number, lang: Lang) {
+  const order = [...(lang === 'en' ? PASSAGES_EN : PASSAGES)].sort(() => Math.random() - 0.5)
   const minLength = duration * 16 // about 190 words per minute, more than anyone types
   let text = order[0].text
   for (let i = 1; text.length < minLength && i < order.length; i++) text += ' ' + order[i].text
@@ -61,15 +106,26 @@ function makeText(duration: number) {
 const DURATIONS = [15, 30, 60] as const
 type Duration = (typeof DURATIONS)[number]
 
-const GENERAL_TIPS = [
-  'Garde les index sur F et J : les petites bosses servent à les retrouver sans regarder.',
-  'Sur un clavier AZERTY, la rangée de repos est Q S D F pour la main gauche, J K L M pour la droite.',
-  'La précision d’abord : une faute corrigée coûte plus cher qu’une lettre tapée lentement.',
-  'Regarde l’écran, pas le clavier. C’est dur au début, puis ça devient naturel.',
-  'Tape au même rythme, comme un métronome, plutôt que par rafales.',
-  'Lis le mot suivant pendant que tu finis celui en cours.',
-  'Quelques minutes par jour valent mieux qu’une heure une fois par semaine.',
-]
+const GENERAL_TIPS: Record<Lang, string[]> = {
+  fr: [
+    'Garde les index sur F et J : les petites bosses servent à les retrouver sans regarder.',
+    'Sur un clavier AZERTY, la rangée de repos est Q S D F pour la main gauche, J K L M pour la droite.',
+    'La précision d’abord : une faute corrigée coûte plus cher qu’une lettre tapée lentement.',
+    'Regarde l’écran, pas le clavier. C’est dur au début, puis ça devient naturel.',
+    'Tape au même rythme, comme un métronome, plutôt que par rafales.',
+    'Lis le mot suivant pendant que tu finis celui en cours.',
+    'Quelques minutes par jour valent mieux qu’une heure une fois par semaine.',
+  ],
+  en: [
+    'Keep your index fingers on F and J: the small bumps let you find them without looking.',
+    'On a QWERTY keyboard, the home row is A S D F for the left hand and J K L ; for the right.',
+    'Accuracy first: a corrected mistake costs more than a letter typed slowly.',
+    'Look at the screen, not the keyboard. It is hard at first, then it becomes natural.',
+    'Type at a steady pace, like a metronome, rather than in bursts.',
+    'Read the next word while you finish the current one.',
+    'A few minutes a day beat one hour once a week.',
+  ],
+}
 
 type Stats = {
   keystrokes: number // every character typed, corrections included
@@ -105,7 +161,8 @@ function readBest(d: Duration): number {
 }
 
 /** Advice picked from the numbers of the run. */
-function tipsFor(r: Result): string[] {
+function tipsFor(r: Result, lang: Lang): string[] {
+  if (lang === 'en') return tipsForEn(r)
   const tips: string[] = []
   if (r.accuracy < 92)
     tips.push(`Précision de ${r.accuracy} % : ralentis un peu. Vise 96 % et plus, la vitesse suivra toute seule.`)
@@ -124,8 +181,35 @@ function tipsFor(r: Result): string[] {
   return tips.slice(0, 3)
 }
 
+function tipsForEn(r: Result): string[] {
+  const tips: string[] = []
+  if (r.accuracy < 92) tips.push(`${r.accuracy}% accuracy: slow down a little. Aim for 96% or more, speed will follow on its own.`)
+  if (r.topMisses.length) {
+    const keys = r.topMisses.map(([k]) => (k === ' ' ? 'space' : k)).join(', ')
+    tips.push(`Keys to work on: ${keys}. Type a few lines of words that contain them, slowly.`)
+  }
+  if (r.corrections > r.errors * 2 && r.corrections > 6)
+    tips.push('You erase a lot: finish the word even with a mistake, then correct less often but better.')
+  if (r.consistency < 70) tips.push(`${r.consistency}% consistency: your pace changes a lot. Find a speed you can hold without stopping.`)
+  if (r.raw - r.wpm > 12) tips.push('Your raw speed is much higher than your net speed: mistakes cost you a lot.')
+  if (r.wpm < 30) tips.push('Under 30 wpm, work on your finger position on the home row (A S D F / J K L ;).')
+  else if (r.wpm < 55) tips.push('Solid base! To level up, practice the most common words until you type them without thinking.')
+  else tips.push('Great speed! Try the 60 s mode to work on endurance and consistency.')
+  return tips.slice(0, 3)
+}
+
 /** Speed per second as a small line chart, with red marks where errors happened. */
-function SpeedChart({ curve, errorSeconds, duration }: { curve: number[]; errorSeconds: number[]; duration: number }) {
+function SpeedChart({
+  curve,
+  errorSeconds,
+  duration,
+  label,
+}: {
+  curve: number[]
+  errorSeconds: number[]
+  duration: number
+  label: string
+}) {
   const W = 300, H = 90, P = 6
   const max = Math.max(30, ...curve) * 1.1
   const x = (i: number) => P + (i / Math.max(1, duration - 1)) * (W - P * 2)
@@ -133,7 +217,7 @@ function SpeedChart({ curve, errorSeconds, duration }: { curve: number[]; errorS
   const line = curve.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')
   const area = curve.length ? `${line} L${x(curve.length - 1).toFixed(1)},${H - P} L${x(0).toFixed(1)},${H - P} Z` : ''
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full max-w-full" role="img" aria-label="Vitesse seconde par seconde">
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full max-w-full" role="img" aria-label={label}>
       <line x1={P} x2={W - P} y1={y(max / 1.1 / 2)} y2={y(max / 1.1 / 2)} stroke="var(--line)" strokeDasharray="3 4" />
       <path d={area} fill="color-mix(in srgb, var(--accent) 16%, transparent)" />
       <path d={line} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
@@ -145,8 +229,10 @@ function SpeedChart({ curve, errorSeconds, duration }: { curve: number[]; errorS
 }
 
 export default function TypingLab() {
+  const t = useT()
+  const lang = useLang()
   const [duration, setDuration] = useState<Duration>(30)
-  const [passage, setPassage] = useState(() => makeText(30))
+  const [passage, setPassage] = useState(() => makeText(30, getLang()))
   const text = passage.text
   const [typed, setTyped] = useState('')
   const [startedAt, setStartedAt] = useState<number | null>(null)
@@ -154,7 +240,8 @@ export default function TypingLab() {
   const [focused, setFocused] = useState(false)
   const [result, setResult] = useState<Result | null>(null)
   const [best, setBest] = useState(() => readBest(30))
-  const [tip] = useState(() => GENERAL_TIPS[Math.floor(Math.random() * GENERAL_TIPS.length)])
+  const [tipIndex] = useState(() => Math.floor(Math.random() * GENERAL_TIPS.fr.length))
+  const tip = GENERAL_TIPS[lang][tipIndex]
   const stats = useRef<Stats>(emptyStats())
   const input = useRef<HTMLInputElement>(null)
 
@@ -248,17 +335,26 @@ export default function TypingLab() {
     setTyped(value.slice(0, text.length))
   }
 
-  const reset = (d: Duration = duration) => {
+  const reset = (d: Duration = duration, focus = true) => {
     setDuration(d)
     setBest(readBest(d))
-    setPassage(makeText(d))
+    setPassage(makeText(d, getLang()))
     setTyped('')
     setStartedAt(null)
     setNow(0)
     setResult(null)
     stats.current = emptyStats()
-    setTimeout(() => input.current?.focus(), 0)
+    if (focus) setTimeout(() => input.current?.focus(), 0)
   }
+
+  // Switching language starts over with a text in the new language
+  const lastLang = useRef(lang)
+  useEffect(() => {
+    if (lang === lastLang.current) return
+    lastLang.current = lang
+    reset(duration, false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang])
 
   // Window of the text around the caret so it never overflows the box
   const from = Math.max(0, text.lastIndexOf(' ', Math.max(0, typed.length - 70)) + 1)
@@ -267,7 +363,7 @@ export default function TypingLab() {
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
-        <div role="group" aria-label="Durée du test" className="flex gap-1.5">
+        <div role="group" aria-label={t('Durée du test', 'Test length')} className="flex gap-1.5">
           {DURATIONS.map((d) => (
             <button
               key={d}
@@ -283,10 +379,10 @@ export default function TypingLab() {
           ))}
         </div>
         <span className="text-muted">
-          Texte : <span className="text-fg">{passage.title}</span>
+          {t('Texte', 'Text')} : <span className="text-fg">{passage.title}</span>
         </span>
         <span className="text-muted">
-          Record ({duration} s) : <span className="text-fg tabular-nums">{best || '—'}</span> mots/min
+          {t('Record', 'Best')} ({duration} s) : <span className="text-fg tabular-nums">{best || '—'}</span> {t('mots/min', 'wpm')}
         </span>
       </div>
 
@@ -295,33 +391,38 @@ export default function TypingLab() {
         <div className="grid min-h-[280px] content-start gap-5 rounded-[14px] bg-vis p-[clamp(16px,2.4vw,28px)]" aria-live="polite">
           <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
             <div className="grid">
-              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Vitesse</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{t('Vitesse', 'Speed')}</span>
               <span className="font-display text-[clamp(44px,5vw,64px)] leading-none font-bold tabular-nums text-accent">
                 {result.wpm}
-                <span className="ml-1.5 font-mono text-sm text-muted">mots/min</span>
+                <span className="ml-1.5 font-mono text-sm text-muted">{t('mots/min', 'wpm')}</span>
               </span>
             </div>
             <div className="grid">
-              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Précision</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{t('Précision', 'Accuracy')}</span>
               <span className="font-display text-[clamp(32px,3.6vw,44px)] leading-none font-bold tabular-nums">{result.accuracy} %</span>
             </div>
             {result.wpm >= best && result.wpm > 0 && (
-              <span className="rounded-full border border-accent px-3 py-1 font-mono text-[11px] text-accent">Nouveau record !</span>
+              <span className="rounded-full border border-accent px-3 py-1 font-mono text-[11px] text-accent">{t('Nouveau record !', 'New record!')}</span>
             )}
           </div>
 
           {result.speedCurve.length > 1 && (
-            <SpeedChart curve={result.speedCurve} errorSeconds={result.errorSeconds} duration={result.duration} />
+            <SpeedChart
+              curve={result.speedCurve}
+              errorSeconds={result.errorSeconds}
+              duration={result.duration}
+              label={t('Vitesse seconde par seconde', 'Speed second by second')}
+            />
           )}
 
           <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[12px] sm:grid-cols-3">
             {[
-              ['Brute', `${result.raw} mots/min`],
-              ['Erreurs', `${result.errors}`],
-              ['Effacés', `${result.corrections}`],
-              ['Régularité', `${result.consistency} %`],
-              ['Lettres justes', `${result.correctChars}`],
-              ['Lettres fausses', `${result.wrongChars}`],
+              [t('Brute', 'Raw'), `${result.raw} ${t('mots/min', 'wpm')}`],
+              [t('Erreurs', 'Errors'), `${result.errors}`],
+              [t('Effacés', 'Erased'), `${result.corrections}`],
+              [t('Régularité', 'Consistency'), `${result.consistency} %`],
+              [t('Lettres justes', 'Correct letters'), `${result.correctChars}`],
+              [t('Lettres fausses', 'Wrong letters'), `${result.wrongChars}`],
             ].map(([k, v]) => (
               <div key={k} className="grid">
                 <dt className="text-muted">{k}</dt>
@@ -332,24 +433,24 @@ export default function TypingLab() {
 
           {result.topMisses.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 font-mono text-[12px]">
-              <span className="text-muted">Touches ratées :</span>
+              <span className="text-muted">{t('Touches ratées :', 'Missed keys:')}</span>
               {result.topMisses.map(([k, n]) => (
                 <span key={k} className="rounded-[6px] border border-bad px-2 py-0.5 text-bad">
-                  {k === ' ' ? 'espace' : k} <span className="opacity-70">×{n}</span>
+                  {k === ' ' ? t('espace', 'space') : k} <span className="opacity-70">×{n}</span>
                 </span>
               ))}
             </div>
           )}
 
           <div className="grid gap-2 border-t border-line pt-4">
-            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent-2">Conseils pour toi</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent-2">{t('Conseils pour toi', 'Tips for you')}</span>
             <ul className="m-0 grid list-none gap-1.5 p-0 text-[14px] text-muted">
-              {tipsFor(result).map((t) => (
-                <li key={t} className="flex gap-2">
+              {tipsFor(result, lang).map((tipText) => (
+                <li key={tipText} className="flex gap-2">
                   <span aria-hidden="true" className="text-accent">
                     ↳
                   </span>
-                  {t}
+                  {tipText}
                 </li>
               ))}
             </ul>
@@ -359,7 +460,7 @@ export default function TypingLab() {
               rel="noopener"
               className="w-fit font-mono text-[12px] text-muted underline decoration-line underline-offset-4 transition-colors hover:text-fg"
             >
-              Pour t’entraîner tous les jours : monkeytype.com ↗
+              {t('Pour t’entraîner tous les jours', 'To practice every day')} : monkeytype.com ↗
             </a>
           </div>
         </div>
@@ -382,7 +483,7 @@ export default function TypingLab() {
             autoCapitalize="off"
             autoCorrect="off"
             spellCheck={false}
-            aria-label="Zone de frappe"
+            aria-label={t('Zone de frappe', 'Typing area')}
             className="absolute inset-0 opacity-0"
           />
           <p className="m-0 font-mono text-[clamp(15px,1.6vw,20px)] leading-relaxed break-words" aria-hidden="true">
@@ -409,7 +510,7 @@ export default function TypingLab() {
           </p>
           {!focused && !startedAt && (
             <span className="pointer-events-none absolute inset-x-4 bottom-4 text-center font-mono text-xs text-muted">
-              Clique ici et commence à taper · le chrono démarre à la première touche
+              {t('Clique ici et commence à taper · le chrono démarre à la première touche', 'Click here and start typing · the timer starts on the first key')}
             </span>
           )}
           {/* Progress of the timer */}
@@ -425,29 +526,29 @@ export default function TypingLab() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-[13px]">
         {result ? (
-          <span className="text-muted">Test de {result.duration} s terminé</span>
+          <span className="text-muted">{t(`Test de ${result.duration} s terminé`, `${result.duration} s test finished`)}</span>
         ) : (
           <div className="flex flex-wrap gap-x-5 gap-y-1 tabular-nums" aria-live="off">
             <span>
-              <span className="text-muted">Temps </span>
+              <span className="text-muted">{t('Temps', 'Time')} </span>
               {Math.ceil(duration - elapsed)} s
             </span>
             <span>
-              <span className="text-muted">Vitesse </span>
-              {liveWpm} mots/min
+              <span className="text-muted">{t('Vitesse', 'Speed')} </span>
+              {liveWpm} {t('mots/min', 'wpm')}
             </span>
             <span>
-              <span className="text-muted">Précision </span>
+              <span className="text-muted">{t('Précision', 'Accuracy')} </span>
               <span className={liveAccuracy < 92 ? 'text-bad' : ''}>{liveAccuracy} %</span>
             </span>
             <span>
-              <span className="text-muted">Erreurs </span>
+              <span className="text-muted">{t('Erreurs', 'Errors')} </span>
               <span className={stats.current.errors ? 'text-bad' : ''}>{stats.current.errors}</span>
             </span>
           </div>
         )}
         <button type="button" onClick={() => reset()} className="rounded-full border border-line px-3.5 py-1.5 transition-colors hover:border-accent">
-          {result ? 'Rejouer' : 'Recommencer'}
+          {result ? t('Rejouer', 'Play again') : t('Recommencer', 'Restart')}
         </button>
       </div>
 
@@ -457,7 +558,7 @@ export default function TypingLab() {
             ↳
           </span>
           <span>
-            <span className="text-fg">Astuce :</span> {tip}
+            <span className="text-fg">{t('Astuce :', 'Tip:')}</span> {tip}
           </span>
         </p>
       )}

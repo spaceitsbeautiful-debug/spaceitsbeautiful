@@ -1,9 +1,11 @@
 import { useMemo, type CSSProperties } from 'react'
 import type { Visual } from '../data/projects'
+import { useT } from '../i18n'
 
 // Illustrations drawn in HTML/CSS for each project card (styles in visuals.css).
 
 function Nativia() {
+  const t = useT()
   return (
     <div className="m-nativia">
       <div className="nv-tiles">
@@ -19,11 +21,11 @@ function Nativia() {
           <i />
         </span>
         <p>
-          On répète ensemble&nbsp;? Écoute bien le son <b>Ɛ</b>.
+          {t('On répète ensemble\u00a0? Écoute bien le son', "Let's repeat together? Listen to the sound")} <b>Ɛ</b>.
         </p>
       </div>
       <div className="nv-progress">
-        <small>Leçon 3 · L'alphabet éwé · 68 %</small>
+        <small>{t("Leçon 3 · L'alphabet éwé · 68 %", 'Lesson 3 · The Ewe alphabet · 68%')}</small>
         <div className="bar">
           <i style={{ width: '68%' }} />
         </div>
@@ -33,6 +35,7 @@ function Nativia() {
 }
 
 function Kurumi() {
+  const t = useT()
   const bars = useMemo(() => {
     const n = 30
     return Array.from({ length: n }, (_, i) => {
@@ -49,13 +52,14 @@ function Kurumi() {
           <i key={i} style={style} />
         ))}
       </div>
-      <p className="kr-cmd">« Kurumi, ouvre VS Code »</p>
-      <p className="kr-reply">D'accord, j'ouvre VS Code.</p>
+      <p className="kr-cmd">{t('« Kurumi, ouvre VS Code »', '"Kurumi, open VS Code"')}</p>
+      <p className="kr-reply">{t("D'accord, j'ouvre VS Code.", 'Sure, opening VS Code.')}</p>
     </div>
   )
 }
 
 function Portal() {
+  const t = useT()
   return (
     <div className="m-portal">
       <div className="pt-side">
@@ -65,9 +69,9 @@ function Portal() {
         <i />
       </div>
       <div className="pt-main">
-        <b>Tableau de bord</b>
+        <b>{t('Tableau de bord', 'Dashboard')}</b>
         <div className="pt-stats">
-          {[['Demandes', 12], ['En cours', 3], ['Résolues', 9]].map(([k, v]) => (
+          {[[t('Demandes', 'Requests'), 12], [t('En cours', 'Open'), 3], [t('Résolues', 'Solved'), 9]].map(([k, v]) => (
             <div key={k}>
               <small>{k}</small>
               <b>{v}</b>
@@ -132,13 +136,14 @@ function qrCells() {
 }
 
 function Queue() {
+  const t = useT()
   const cells = useMemo(qrCells, [])
   return (
     <div className="m-queue">
       <div className="ticket">
-        <small>Votre ticket</small>
+        <small>{t('Votre ticket', 'Your ticket')}</small>
         <b>A-042</b>
-        <span>Guichet 3 · 4 personnes avant vous</span>
+        <span>{t('Guichet 3 · 4 personnes avant vous', 'Counter 3 · 4 people ahead of you')}</span>
         <div className="qr">
           {cells.map((on, i) => (
             <i key={i} className={on ? 'on' : undefined} />
@@ -150,14 +155,15 @@ function Queue() {
 }
 
 function Kuro() {
+  const t = useT()
   return (
     <div className="m-kuro">
       <div className="kt-head">
         <span className="kt-logo">黒</span>
         <b>Kuro-Talk</b>
       </div>
-      <div className="kt-msg in">On se retrouve à 18h&nbsp;?</div>
-      <div className="kt-msg out">Ça marche, j'arrive.</div>
+      <div className="kt-msg in">{t('On se retrouve à 18h\u00a0?', 'Meet at 6 pm?')}</div>
+      <div className="kt-msg out">{t("Ça marche, j'arrive.", "Sounds good, I'm coming.")}</div>
       <div className="kt-msg in typing">
         <i />
         <i />

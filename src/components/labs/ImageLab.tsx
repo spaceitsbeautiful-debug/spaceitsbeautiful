@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { avatar } from '../../data/site'
+import { useT } from '../../i18n'
 
 type Mode = 'particles' | 'ascii'
 
@@ -31,6 +32,7 @@ function sampleImage(img: HTMLImageElement): Float32Array {
 export default function ImageLab() {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [mode, setMode] = useState<Mode>('particles')
+  const t = useT()
   const modeRef = useRef(mode)
   modeRef.current = mode
 
@@ -224,13 +226,13 @@ export default function ImageLab() {
     <div className="grid gap-4">
       <canvas
         ref={canvas}
-        aria-label="L'avatar recomposé en particules interactives"
+        aria-label={t("L'avatar recomposé en particules interactives", 'The avatar rebuilt from interactive particles')}
         className="aspect-square w-full max-w-full touch-none rounded-[14px] bg-vis"
       />
-      <div role="group" aria-label="Choisir le rendu" className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t('Choisir le rendu', 'Pick the rendering')} className="flex flex-wrap gap-2">
         {(
           [
-            ['particles', 'Particules'],
+            ['particles', t('Particules', 'Particles')],
             ['ascii', 'ASCII'],
           ] as const
         ).map(([id, label]) => (

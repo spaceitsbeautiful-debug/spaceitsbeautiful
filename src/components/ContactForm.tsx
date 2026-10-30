@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { contact } from '../data/site'
+import { useT } from '../i18n'
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
 /** Sends a message through Web3Forms. Hidden until a key is set in data/site.ts. */
 export default function ContactForm() {
+  const t = useT()
   const [status, setStatus] = useState<Status>('idle')
   if (!contact.formKey) return null
 
@@ -32,15 +34,15 @@ export default function ContactForm() {
   return (
     <form onSubmit={onSubmit} className="mt-12 grid max-w-[720px] gap-3 sm:grid-cols-2">
       <label className="grid gap-1.5">
-        <span className="font-mono text-xs text-muted">Ton nom</span>
+        <span className="font-mono text-xs text-muted">{t('Ton nom', 'Your name')}</span>
         <input id="contact-name" name="name" required autoComplete="name" className={field} />
       </label>
       <label className="grid gap-1.5">
-        <span className="font-mono text-xs text-muted">Ton email</span>
+        <span className="font-mono text-xs text-muted">{t('Ton email', 'Your email')}</span>
         <input id="contact-email" name="email" type="email" required autoComplete="email" className={field} />
       </label>
       <label className="grid gap-1.5 sm:col-span-2">
-        <span className="font-mono text-xs text-muted">Ton message</span>
+        <span className="font-mono text-xs text-muted">{t('Ton message', 'Your message')}</span>
         <textarea id="contact-message" name="message" required rows={5} className={`${field} resize-y`} />
       </label>
       {/* Honeypot against bots: humans never see it */}
@@ -51,11 +53,11 @@ export default function ContactForm() {
           disabled={status === 'sending'}
           className="rounded-full bg-accent px-6 py-3 font-mono text-sm text-bg transition-transform hover:-translate-y-px disabled:opacity-60"
         >
-          {status === 'sending' ? 'Envoi…' : 'Envoyer'}
+          {status === 'sending' ? t('Envoi…', 'Sending…') : t('Envoyer', 'Send')}
         </button>
         <span role="status" className="font-mono text-[13px] text-muted">
-          {status === 'sent' && 'Message envoyé. Je te réponds vite.'}
-          {status === 'error' && "L'envoi n'a pas marché. Réessaie, ou écris-moi sur Instagram."}
+          {status === 'sent' && t('Message envoyé. Je te réponds vite.', "Message sent. I'll get back to you soon.")}
+          {status === 'error' && t("L'envoi n'a pas marché. Réessaie, ou écris-moi sur Instagram.", "Sending didn't work. Try again, or message me on Instagram.")}
         </span>
       </div>
     </form>
