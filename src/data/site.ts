@@ -88,14 +88,14 @@ export const inspirations = {
     { title: 'Sword Art Online', jp: 'ソードアート・オンライン', note: 'Kirito, et des mondes virtuels à construire.' },
     { title: 'Saga of Tanya the Evil', jp: '幼女戦記', note: 'Stratégie, discipline, personnage hors norme.' },
   ],
-  /** Played in the page through the official YouTube video (the artist's own channel). */
+  /** Played in the page through Spotify's official embedded player. */
   track: {
     title: 'veil',
     context: 'Fire Force · ending 1',
     jp: '炎炎ノ消防隊',
     artist: 'Keina Suda',
     artistJp: '須田景凪',
-    youtubeId: 'n7VZxg9pxkg',
+    spotifyId: '1dGF5ymTyBB2ZmOypkeU1F',
   },
 }
 
