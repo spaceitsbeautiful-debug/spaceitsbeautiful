@@ -88,14 +88,17 @@ export const inspirations = {
     { title: 'Sword Art Online', jp: 'ソードアート・オンライン', note: 'Kirito, et des mondes virtuels à construire.' },
     { title: 'Saga of Tanya the Evil', jp: '幼女戦記', note: 'Stratégie, discipline, personnage hors norme.' },
   ],
-  /** Played in the page through Spotify's official embedded player. */
+  /**
+   * The track behind the record. Royalty-free (Pixabay Content License): the file lives in
+   * public/music/. To change it, drop another MP3 there and update these lines.
+   */
   track: {
-    title: 'veil',
-    context: 'Fire Force · ending 1',
-    jp: '炎炎ノ消防隊',
-    artist: 'Keina Suda',
-    artistJp: '須田景凪',
-    spotifyId: '1dGF5ymTyBB2ZmOypkeU1F',
+    title: 'Petals on the Water',
+    context: 'Japanese fusion lo-fi',
+    jp: '水面の花びら',
+    artist: 'kaazoom',
+    src: 'music/petals-on-the-water.mp3',
+    source: 'https://pixabay.com/music/search/kaazoom%20petals%20on%20the%20water/',
   },
 }
 

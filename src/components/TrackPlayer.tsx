@@ -1,148 +1,77 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { siSpotify } from 'simple-icons'
 import { inspirations } from '../data/site'
 import { setExternalPlaying, useSoundEnabled } from '../sound'
 import { ease } from './ui'
 
-// Plays the track through Spotify's official embedded player, kept out of sight: the record is
-// the play/pause button, and a small "Spotify" credit links to the track. While it plays, the
-// site soundtrack pauses; when it is paused or ends, the soundtrack comes back.
-// Visitors logged in to Spotify in their browser hear the whole song, others a 30 s preview.
+// The record is the play/pause button for a royalty-free MP3 hosted with the site.
+// While it plays, the site soundtrack pauses; when it is paused or ends, the soundtrack comes back.
 
-type PlaybackUpdate = { data: { isPaused: boolean; isBuffering: boolean; position: number; duration: number } }
-type SpotifyController = {
-  addListener: (event: 'ready' | 'playback_update', cb: (e: PlaybackUpdate) => void) => void
-  togglePlay: () => void
-  destroy: () => void
-}
-type SpotifyIFrameAPI = {
-  createController: (
-    el: HTMLElement,
-    opts: { uri: string; width?: string | number; height?: string | number; theme?: 'dark' | 'light' },
-    cb: (controller: SpotifyController) => void,
-  ) => void
-}
-declare global {
-  interface Window {
-    onSpotifyIframeApiReady?: (api: SpotifyIFrameAPI) => void
-  }
-}
-
-let apiPromise: Promise<SpotifyIFrameAPI> | null = null
-/** Loads Spotify's iFrame API once. Rejects if it cannot load (blocked by the host, offline...). */
-function loadSpotifyApi(): Promise<SpotifyIFrameAPI> {
-  if (apiPromise) return apiPromise
-  apiPromise = new Promise((resolve, reject) => {
-    window.onSpotifyIframeApiReady = (api) => resolve(api)
-    const s = document.createElement('script')
-    s.src = 'https://open.spotify.com/embed/iframe-api/v1'
-    s.async = true
-    s.onerror = () => {
-      apiPromise = null
-      reject(new Error('Spotify API blocked'))
-    }
-    document.head.appendChild(s)
-    setTimeout(() => reject(new Error('Spotify API timeout')), 8000)
-  })
-  return apiPromise
-}
-
-type Status = 'loading' | 'ready' | 'playing' | 'paused' | 'blocked'
+const fmt = (s: number) => (Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00')
 
 export default function TrackPlayer() {
   const { track } = inspirations
   const card = useRef<HTMLDivElement>(null)
-  const mount = useRef<HTMLDivElement>(null)
-  const controller = useRef<SpotifyController | null>(null)
-  // Start loading well before the card is reached: when it's within ~1.5 screens,
-  // or a few seconds after the page has loaded, whichever comes first
-  const nearby = useInView(card, { once: true, margin: '1200px' })
-  const [idle, setIdle] = useState(false)
-  const [status, setStatus] = useState<Status>('loading')
-  const wantsPlay = useRef(false) // the record was clicked before the player was ready
+  const audio = useRef<HTMLAudioElement>(null)
   const siteSound = useSoundEnabled()
-  const openUrl = `https://open.spotify.com/track/${track.spotifyId}`
+  const [playing, setPlaying] = useState(false)
+  const [time, setTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [started, setStarted] = useState(false)
+
+  // Start downloading the file once the card is getting close, so the first click plays at once
+  const nearby = useInView(card, { once: true, margin: '800px' })
+  useEffect(() => {
+    if (nearby && audio.current) audio.current.preload = 'auto'
+  }, [nearby])
 
   useEffect(() => {
-    const start = () => setIdle(true)
-    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback
-    const id = window.setTimeout(() => (ric ? ric(start, { timeout: 2000 }) : start()), 3500)
-    return () => clearTimeout(id)
+    const a = audio.current!
+    const onPlay = () => {
+      setPlaying(true)
+      setStarted(true)
+      setExternalPlaying(true)
+    }
+    const onStop = () => {
+      setPlaying(false)
+      setExternalPlaying(false)
+    }
+    const onTime = () => setTime(a.currentTime)
+    const onMeta = () => setDuration(a.duration)
+    a.addEventListener('play', onPlay)
+    a.addEventListener('pause', onStop)
+    a.addEventListener('ended', onStop)
+    a.addEventListener('timeupdate', onTime)
+    a.addEventListener('loadedmetadata', onMeta)
+    return () => {
+      a.removeEventListener('play', onPlay)
+      a.removeEventListener('pause', onStop)
+      a.removeEventListener('ended', onStop)
+      a.removeEventListener('timeupdate', onTime)
+      a.removeEventListener('loadedmetadata', onMeta)
+      setExternalPlaying(false)
+    }
   }, [])
 
-  useEffect(() => {
-    if (!(nearby || idle) || controller.current) return
-    let cancelled = false
-    loadSpotifyApi()
-      .then((api) => {
-        if (cancelled || !mount.current) return
-        const el = document.createElement('div')
-        mount.current.appendChild(el)
-        api.createController(el, { uri: `spotify:track:${track.spotifyId}`, width: '100%', height: 80, theme: 'dark' }, (c) => {
-          controller.current = c
-          // Dev only: lets automated tests drive the player (clicks can't reach inside the iframe)
-          if (import.meta.env.DEV) (window as unknown as { __spotify?: SpotifyController }).__spotify = c
-          c.addListener('ready', () => {
-            setStatus('ready')
-            if (wantsPlay.current) {
-              wantsPlay.current = false
-              c.togglePlay()
-            }
-          })
-          c.addListener('playback_update', (e) => {
-            const { isPaused, position, duration } = e.data
-            const ended = duration > 0 && position >= duration - 300
-            if (!isPaused && !ended) {
-              setStatus('playing')
-              setExternalPlaying(true)
-            } else {
-              setStatus('paused')
-              setExternalPlaying(false)
-            }
-          })
-        })
-      })
-      .catch(() => !cancelled && setStatus('blocked'))
-    return () => {
-      cancelled = true
-    }
-  }, [nearby, idle, track.spotifyId])
-
-  useEffect(
-    () => () => {
-      controller.current?.destroy()
-      setExternalPlaying(false)
-    },
-    [],
-  )
-
-  const playing = status === 'playing'
-  const ready = status === 'ready' || status === 'playing' || status === 'paused'
-
-  const onRecord = () => {
-    if (status === 'blocked') window.open(openUrl, '_blank', 'noopener')
-    else if (ready) controller.current?.togglePlay()
-    else {
-      // Not ready yet: remember the click, the song starts as soon as the player is ready
-      wantsPlay.current = !wantsPlay.current
-      setQueued(wantsPlay.current)
-    }
+  const toggle = () => {
+    const a = audio.current!
+    if (a.paused) a.play().catch(() => {})
+    else a.pause()
   }
-  const [queued, setQueued] = useState(false)
-  useEffect(() => {
-    if (ready) setQueued(false)
-  }, [ready])
-  const recordLabel =
-    status === 'blocked'
-      ? 'Écouter veil sur Spotify'
-      : !ready
-        ? queued
-          ? 'Lancement dès que le lecteur est prêt…'
-          : 'Écouter veil'
-        : playing
-          ? 'Mettre veil en pause'
-          : 'Écouter veil'
+
+  const seek = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+    const a = audio.current!
+    if (!duration) return
+    if ('key' in e) {
+      if (e.key === 'ArrowRight') a.currentTime = Math.min(duration, a.currentTime + 5)
+      else if (e.key === 'ArrowLeft') a.currentTime = Math.max(0, a.currentTime - 5)
+      return
+    }
+    const r = e.currentTarget.getBoundingClientRect()
+    a.currentTime = ((e.clientX - r.left) / r.width) * duration
+  }
+
+  const label = playing ? `Mettre ${track.title} en pause` : `Écouter ${track.title}`
 
   return (
     <motion.div
@@ -153,6 +82,8 @@ export default function TrackPlayer() {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, ease }}
     >
+      <audio ref={audio} src={track.src} preload="metadata" />
+
       <div className="flex items-center justify-between font-mono text-xs text-muted">
         <span>{playing ? 'En lecture' : 'En boucle'}</span>
         <span aria-hidden="true" className="flex h-4 items-end gap-[3px] text-accent">
@@ -169,11 +100,11 @@ export default function TrackPlayer() {
       {/* The record is the button: it spins while the song plays, the label shows play/pause on hover */}
       <button
         type="button"
-        onClick={onRecord}
-        aria-label={recordLabel}
+        onClick={toggle}
+        aria-label={label}
         aria-pressed={playing}
-        title={recordLabel}
-        className={`group/rec relative mx-auto aspect-square w-[min(64%,210px)] rounded-full transition-transform duration-500 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${queued ? 'cursor-wait' : ''}`}
+        title={label}
+        className="group/rec relative mx-auto aspect-square w-[min(64%,210px)] rounded-full transition-transform duration-500 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
         <span
           aria-hidden="true"
@@ -183,7 +114,7 @@ export default function TrackPlayer() {
           aria-hidden="true"
           className="absolute inset-[34%] grid place-items-center rounded-full bg-accent font-display text-[clamp(18px,2vw,26px)] font-bold text-bg"
         >
-          <span className={`transition-opacity ${queued ? 'animate-pulse' : 'group-hover/rec:opacity-0'}`}>炎</span>
+          <span className="transition-opacity group-hover/rec:opacity-0">花</span>
           <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity group-hover/rec:opacity-100">
             {playing ? (
               <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor">
@@ -204,38 +135,56 @@ export default function TrackPlayer() {
           <span lang="ja" className="font-mono text-xs text-accent-2">
             {track.jp} · {track.context}
           </span>
-          <span className="font-display text-[clamp(26px,2.6vw,38px)] leading-tight font-bold">{track.title}</span>
-          <span className="text-muted">
-            {track.artist} <span lang="ja">({track.artistJp})</span>
-          </span>
+          <span className="font-display text-[clamp(24px,2.4vw,34px)] leading-tight font-bold">{track.title}</span>
+          <span className="text-muted">{track.artist}</span>
         </div>
 
-        {/* The Spotify player itself, out of sight (the record drives it) */}
-        {status !== 'blocked' && <div ref={mount} aria-hidden="true" className="spotify-mount" />}
+        {/* Progress: click (or arrow keys) to move in the song */}
+        <div className="grid gap-1.5">
+          <div
+            role="slider"
+            tabIndex={0}
+            aria-label="Position dans le morceau"
+            aria-valuemin={0}
+            aria-valuemax={Math.round(duration)}
+            aria-valuenow={Math.round(time)}
+            aria-valuetext={`${fmt(time)} sur ${fmt(duration)}`}
+            onClick={seek}
+            onKeyDown={seek}
+            className="group/bar relative h-4 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <span className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-line" />
+            <span
+              className="absolute top-1/2 left-0 h-[3px] -translate-y-1/2 rounded-full bg-accent"
+              style={{ width: `${duration ? (time / duration) * 100 : 0}%` }}
+            />
+            <span
+              className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent opacity-0 transition-opacity group-hover/bar:opacity-100"
+              style={{ left: `${duration ? (time / duration) * 100 : 0}%` }}
+            />
+          </div>
+          <div className="flex justify-between font-mono text-[11px] text-muted tabular-nums">
+            <span>{fmt(time)}</span>
+            <span>{fmt(duration)}</span>
+          </div>
+        </div>
 
-        <a
-          href={openUrl}
-          target="_blank"
-          rel="noopener"
-          className="flex w-fit items-center gap-2 font-mono text-[11px] text-muted transition-colors hover:text-fg"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d={siSpotify.path} />
-          </svg>
-          {queued ? 'Chargement du lecteur…' : status === 'blocked' ? 'Écouter sur Spotify ↗' : 'Clique sur le disque · via Spotify ↗'}
-        </a>
-
-        {(status === 'playing' || status === 'paused') && (
-          <span className="font-mono text-[11px] text-muted">
-            {playing
-              ? siteSound
-                ? 'La musique du site est en pause pendant l’écoute.'
-                : 'Lecture en cours.'
-              : siteSound
-                ? 'En pause : la musique du site reprend.'
-                : 'En pause.'}
-          </span>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-muted">
+          <a href={track.source} target="_blank" rel="noopener" className="transition-colors hover:text-fg">
+            Musique : {track.artist} · Pixabay ↗
+          </a>
+          {started && (
+            <span>
+              {playing
+                ? siteSound
+                  ? 'Musique du site en pause'
+                  : 'Lecture en cours'
+                : siteSound
+                  ? 'Musique du site reprise'
+                  : 'En pause'}
+            </span>
+          )}
+        </div>
       </div>
     </motion.div>
   )
