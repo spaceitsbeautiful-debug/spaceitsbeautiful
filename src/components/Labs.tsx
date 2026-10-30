@@ -19,8 +19,8 @@ const labs = [
   },
   {
     title: 'Test de frappe',
-    text: "30 secondes pour taper le plus de mots possible. Un clin d'œil à Monkeytype, sur lequel je m'entraîne.",
-    tech: 'React · état en temps réel',
+    text: "15, 30 ou 60 secondes. Le test repère chaque faute (même corrigée) et les touches que tu rates, trace ta vitesse seconde par seconde, puis te donne des conseils adaptés. Inspiré de Monkeytype, qui m'a vraiment aidé à taper plus vite.",
+    tech: 'React · statistiques en temps réel',
     Demo: TypingLab,
   },
 ]
