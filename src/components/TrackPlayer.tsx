@@ -55,14 +55,24 @@ export default function TrackPlayer() {
   const card = useRef<HTMLDivElement>(null)
   const mount = useRef<HTMLDivElement>(null)
   const controller = useRef<SpotifyController | null>(null)
-  const inView = useInView(card, { once: true, margin: '200px' })
+  // Start loading well before the card is reached: when it's within ~1.5 screens,
+  // or a few seconds after the page has loaded, whichever comes first
+  const nearby = useInView(card, { once: true, margin: '1200px' })
+  const [idle, setIdle] = useState(false)
   const [status, setStatus] = useState<Status>('loading')
+  const wantsPlay = useRef(false) // the record was clicked before the player was ready
   const siteSound = useSoundEnabled()
   const openUrl = `https://open.spotify.com/track/${track.spotifyId}`
 
-  // Load the player only when the card comes near the screen
   useEffect(() => {
-    if (!inView || controller.current) return
+    const start = () => setIdle(true)
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback
+    const id = window.setTimeout(() => (ric ? ric(start, { timeout: 2000 }) : start()), 3500)
+    return () => clearTimeout(id)
+  }, [])
+
+  useEffect(() => {
+    if (!(nearby || idle) || controller.current) return
     let cancelled = false
     loadSpotifyApi()
       .then((api) => {
@@ -73,7 +83,13 @@ export default function TrackPlayer() {
           controller.current = c
           // Dev only: lets automated tests drive the player (clicks can't reach inside the iframe)
           if (import.meta.env.DEV) (window as unknown as { __spotify?: SpotifyController }).__spotify = c
-          c.addListener('ready', () => setStatus('ready'))
+          c.addListener('ready', () => {
+            setStatus('ready')
+            if (wantsPlay.current) {
+              wantsPlay.current = false
+              c.togglePlay()
+            }
+          })
           c.addListener('playback_update', (e) => {
             const { isPaused, position, duration } = e.data
             const ended = duration > 0 && position >= duration - 300
@@ -91,7 +107,7 @@ export default function TrackPlayer() {
     return () => {
       cancelled = true
     }
-  }, [inView, track.spotifyId])
+  }, [nearby, idle, track.spotifyId])
 
   useEffect(
     () => () => {
@@ -107,9 +123,26 @@ export default function TrackPlayer() {
   const onRecord = () => {
     if (status === 'blocked') window.open(openUrl, '_blank', 'noopener')
     else if (ready) controller.current?.togglePlay()
+    else {
+      // Not ready yet: remember the click, the song starts as soon as the player is ready
+      wantsPlay.current = !wantsPlay.current
+      setQueued(wantsPlay.current)
+    }
   }
+  const [queued, setQueued] = useState(false)
+  useEffect(() => {
+    if (ready) setQueued(false)
+  }, [ready])
   const recordLabel =
-    status === 'blocked' ? 'Écouter veil sur Spotify' : !ready ? 'Chargement du lecteur…' : playing ? 'Mettre veil en pause' : 'Écouter veil'
+    status === 'blocked'
+      ? 'Écouter veil sur Spotify'
+      : !ready
+        ? queued
+          ? 'Lancement dès que le lecteur est prêt…'
+          : 'Écouter veil'
+        : playing
+          ? 'Mettre veil en pause'
+          : 'Écouter veil'
 
   return (
     <motion.div
@@ -139,9 +172,8 @@ export default function TrackPlayer() {
         onClick={onRecord}
         aria-label={recordLabel}
         aria-pressed={playing}
-        disabled={status === 'loading'}
         title={recordLabel}
-        className="group/rec relative mx-auto aspect-square w-[min(64%,210px)] rounded-full transition-transform duration-500 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent disabled:cursor-wait"
+        className={`group/rec relative mx-auto aspect-square w-[min(64%,210px)] rounded-full transition-transform duration-500 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${queued ? 'cursor-wait' : ''}`}
       >
         <span
           aria-hidden="true"
@@ -151,7 +183,7 @@ export default function TrackPlayer() {
           aria-hidden="true"
           className="absolute inset-[34%] grid place-items-center rounded-full bg-accent font-display text-[clamp(18px,2vw,26px)] font-bold text-bg"
         >
-          <span className={`transition-opacity ${status === 'loading' ? 'animate-pulse' : 'group-hover/rec:opacity-0'}`}>炎</span>
+          <span className={`transition-opacity ${queued ? 'animate-pulse' : 'group-hover/rec:opacity-0'}`}>炎</span>
           <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity group-hover/rec:opacity-100">
             {playing ? (
               <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor">
@@ -190,7 +222,7 @@ export default function TrackPlayer() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d={siSpotify.path} />
           </svg>
-          {status === 'loading' ? 'Chargement…' : status === 'blocked' ? 'Écouter sur Spotify ↗' : 'Clique sur le disque · via Spotify ↗'}
+          {queued ? 'Chargement du lecteur…' : status === 'blocked' ? 'Écouter sur Spotify ↗' : 'Clique sur le disque · via Spotify ↗'}
         </a>
 
         {(status === 'playing' || status === 'paused') && (
