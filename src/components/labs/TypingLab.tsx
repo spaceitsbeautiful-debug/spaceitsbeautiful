@@ -4,10 +4,60 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 // remembers which keys you miss, plots your speed second by second, and ends with tips
 // based on what it saw.
 
-const WORDS =
-  'code projet écran clavier souris fichier dossier réseau serveur client données base table requête page bouton menu image texte police couleur ombre lumière nuit jour rêve flamme vent pluie route ville monde temps vite lent calme fort libre simple propre rapide neuf ancien petit grand haut bas avant après jamais toujours souvent encore déjà ensemble seul nous vous elle lui faire voir dire aller venir prendre donner trouver penser croire savoir pouvoir vouloir être avoir mettre parler passer suivre vivre écrire lire jouer chercher garder'.split(
-    ' ',
-  )
+// Short original texts to type, with real sentences, capitals and punctuation.
+// Only characters easy to type on an AZERTY keyboard (plain ' and " quotes).
+const PASSAGES = [
+  {
+    title: 'Le développeur de nuit',
+    text: "La nuit tombe sur la ville. Les écrans s'allument un par un, et dans une petite chambre, un jeune développeur ouvre son éditeur. Il ne sait pas encore ce qu'il va construire ce soir, mais il sait une chose : chaque ligne de code le rapproche un peu plus de ses idées.",
+  },
+  {
+    title: "L'ombre",
+    text: "L'ombre n'est pas l'absence de lumière, elle en est la preuve. Partout où quelque chose brille, une ombre apparaît juste derrière, discrète et fidèle. Peut-être que les meilleurs projets naissent ainsi, dans le calme, loin du bruit.",
+  },
+  {
+    title: 'Comme un instrument',
+    text: "Apprendre à taper vite, c'est comme apprendre un instrument. Au début, les doigts hésitent et cherchent les touches. Puis, avec un peu de pratique chaque jour, les gestes deviennent naturels et la pensée passe directement de la tête à l'écran.",
+  },
+  {
+    title: 'Une histoire bien racontée',
+    text: "Un bon programme ressemble à une histoire bien racontée. Chaque fonction a un rôle clair, chaque variable porte un nom qui explique ce qu'elle contient. Quand on relit le code six mois plus tard, on doit pouvoir le comprendre sans effort.",
+  },
+  {
+    title: 'Le feu',
+    text: "Le feu peut détruire, mais il peut aussi réchauffer et éclairer. Tout dépend de celui qui le contrôle. Il en va de même pour la technologie : un outil n'est ni bon ni mauvais, c'est l'usage qu'on en fait qui compte vraiment.",
+  },
+  {
+    title: 'Jour de pluie',
+    text: "Ce matin, la pluie tape doucement contre la fenêtre. Une tasse de thé fume sur le bureau, la musique joue en fond, et le clavier fait son petit bruit régulier. Il n'y a rien de plus agréable qu'une journée calme pour avancer sur un projet.",
+  },
+  {
+    title: 'Une autre langue',
+    text: "Chaque langue raconte une manière de voir le monde. Apprendre l'éwé, c'est découvrir des sons nouveaux, des proverbes anciens et une culture riche. Une application peut aider, mais rien ne remplace la curiosité et l'envie de comprendre.",
+  },
+  {
+    title: 'Le bug',
+    text: "Les erreurs font partie du chemin. Un bug qui résiste pendant des heures finit toujours par livrer son secret. Et le jour où on le trouve, on apprend souvent bien plus qu'en écrivant du code qui marche du premier coup.",
+  },
+  {
+    title: 'Rêve lucide',
+    text: "Dans un rêve lucide, on sait qu'on rêve. On peut alors voler au-dessus des toits, traverser les murs ou changer le décor d'un simple geste. Coder procure parfois la même sensation : celle de créer un monde qui obéit à ses propres règles.",
+  },
+  {
+    title: 'Les petites habitudes',
+    text: "Pour progresser, il ne faut pas forcément de grands efforts. Quinze pompes le matin, quinze le soir, quelques minutes de frappe par jour, une page de code de plus. Ce sont les petites habitudes répétées qui construisent les grands résultats.",
+  },
+]
+
+/** A random passage, followed by others if needed so a fast typist never runs out of text. */
+function makeText(duration: number) {
+  const order = [...PASSAGES].sort(() => Math.random() - 0.5)
+  const minLength = duration * 16 // about 190 words per minute, more than anyone types
+  let text = order[0].text
+  for (let i = 1; text.length < minLength && i < order.length; i++) text += ' ' + order[i].text
+  return { title: order[0].title, text }
+}
+
 const DURATIONS = [15, 30, 60] as const
 type Duration = (typeof DURATIONS)[number]
 
@@ -20,8 +70,6 @@ const GENERAL_TIPS = [
   'Lis le mot suivant pendant que tu finis celui en cours.',
   'Quelques minutes par jour valent mieux qu’une heure une fois par semaine.',
 ]
-
-const makeText = () => Array.from({ length: 70 }, () => WORDS[Math.floor(Math.random() * WORDS.length)]).join(' ')
 
 type Stats = {
   keystrokes: number // every character typed, corrections included
@@ -98,7 +146,8 @@ function SpeedChart({ curve, errorSeconds, duration }: { curve: number[]; errorS
 
 export default function TypingLab() {
   const [duration, setDuration] = useState<Duration>(30)
-  const [text, setText] = useState(makeText)
+  const [passage, setPassage] = useState(() => makeText(30))
+  const text = passage.text
   const [typed, setTyped] = useState('')
   const [startedAt, setStartedAt] = useState<number | null>(null)
   const [now, setNow] = useState(0)
@@ -202,7 +251,7 @@ export default function TypingLab() {
   const reset = (d: Duration = duration) => {
     setDuration(d)
     setBest(readBest(d))
-    setText(makeText())
+    setPassage(makeText(d))
     setTyped('')
     setStartedAt(null)
     setNow(0)
@@ -212,8 +261,8 @@ export default function TypingLab() {
   }
 
   // Window of the text around the caret so it never overflows the box
-  const from = Math.max(0, text.lastIndexOf(' ', Math.max(0, typed.length - 60)) + 1)
-  const visible = text.slice(from, from + 170)
+  const from = Math.max(0, text.lastIndexOf(' ', Math.max(0, typed.length - 70)) + 1)
+  const visible = text.slice(from, from + 220)
 
   return (
     <div className="grid gap-4">
@@ -233,6 +282,9 @@ export default function TypingLab() {
             </button>
           ))}
         </div>
+        <span className="text-muted">
+          Texte : <span className="text-fg">{passage.title}</span>
+        </span>
         <span className="text-muted">
           Record ({duration} s) : <span className="text-fg tabular-nums">{best || '—'}</span> mots/min
         </span>
