@@ -17,14 +17,14 @@ const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-red
  * Every glyph gets the same number of points so the particles can morph from one to the next.
  */
 function sampleGlyph(char: string, count: number): Float32Array {
-  const S = 220
+  const S = 400 // sampling resolution: higher = finer strokes
   const c = document.createElement('canvas')
   c.width = c.height = S
   const g = c.getContext('2d', { willReadFrequently: true })!
   g.fillStyle = '#fff'
   g.textAlign = 'center'
   g.textBaseline = 'middle'
-  g.font = `800 196px ${FONT}`
+  g.font = `800 356px ${FONT}`
   g.fillText(char, S / 2, S / 2 + 6)
   const data = g.getImageData(0, 0, S, S).data
   const pts: number[] = []
@@ -33,12 +33,18 @@ function sampleGlyph(char: string, count: number): Float32Array {
       if (data[(y * S + x) * 4 + 3] > 128) pts.push(x / S - 0.5, 0.5 - y / S)
     }
   }
-  const out = new Float32Array(count * 2)
+  // Spread the points evenly over the glyph: shuffle, then take them in order (no clumps from repeats)
   const n = pts.length / 2
+  const order = Array.from({ length: n }, (_, i) => i)
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[order[i], order[j]] = [order[j], order[i]]
+  }
+  const out = new Float32Array(count * 2)
   for (let i = 0; i < count; i++) {
-    const j = Math.floor(Math.random() * n)
-    out[i * 2] = pts[j * 2] + (Math.random() - 0.5) * 0.006
-    out[i * 2 + 1] = pts[j * 2 + 1] + (Math.random() - 0.5) * 0.006
+    const j = order[i % n]
+    out[i * 2] = pts[j * 2] + (Math.random() - 0.5) * 0.002
+    out[i * 2 + 1] = pts[j * 2 + 1] + (Math.random() - 0.5) * 0.002
   }
   return out
 }
@@ -50,7 +56,7 @@ function makeSprite() {
   const g = c.getContext('2d')!
   const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32)
   grad.addColorStop(0, 'rgba(255,255,255,1)')
-  grad.addColorStop(0.45, 'rgba(255,255,255,0.85)')
+  grad.addColorStop(0.55, 'rgba(255,255,255,0.9)') // sharper edge
   grad.addColorStop(1, 'rgba(255,255,255,0)')
   g.fillStyle = grad
   g.fillRect(0, 0, 64, 64)
@@ -113,7 +119,7 @@ function Particles({ glyphs, index }: { glyphs: Float32Array[]; index: number })
     const Ng = glyphs[0].length / 2
     const N = Ng + (mobile ? 160 : 420)
     const home = new Float32Array(N * 3) // glyph: glyph-normalized ; dust: viewport-normalized
-    for (let i = 0; i < Ng; i++) home[i * 3 + 2] = (Math.random() - 0.5) * 0.35
+    for (let i = 0; i < Ng; i++) home[i * 3 + 2] = (Math.random() - 0.5) * 0.1
     for (let i = Ng; i < N; i++) {
       home[i * 3] = Math.random() - 0.5
       home[i * 3 + 1] = Math.random() - 0.5
@@ -212,8 +218,8 @@ function Particles({ glyphs, index }: { glyphs: Float32Array[]; index: number })
     geom.current.attributes.color.needsUpdate = true
     mat.current.blending = col.dark ? THREE.AdditiveBlending : THREE.NormalBlending
     // Normal blending on a light page washes the soft dots out, so make them bigger and opaque there
-    mat.current.opacity = (col.dark ? 0.9 : 1) * (mobile ? 0.45 : 1)
-    mat.current.size = col.dark ? 0.055 : 0.075
+    mat.current.opacity = (col.dark ? 0.8 : 1) * (mobile ? 0.5 : 1)
+    mat.current.size = col.dark ? 0.036 : 0.048
     mat.current.needsUpdate = true
     invalidate()
   }, [theme, data, mobile, invalidate])
@@ -267,7 +273,7 @@ function Particles({ glyphs, index }: { glyphs: Float32Array[]; index: number })
         vy += (dy / d) * f
         vz += f * 1.6
       }
-      const k = i < Ng ? 0.018 : 0.006
+      const k = i < Ng ? 0.024 : 0.006
       vx += (tmp[0] - pos[b]) * k * dt
       vy += (tmp[1] - pos[b + 1]) * k * dt
       vz += (tmp[2] - pos[b + 2]) * k * dt
@@ -290,7 +296,7 @@ function Particles({ glyphs, index }: { glyphs: Float32Array[]; index: number })
           <bufferAttribute attach="attributes-position" args={[data.pos, 3]} />
           <bufferAttribute attach="attributes-color" args={[data.colors, 3]} />
         </bufferGeometry>
-        <pointsMaterial ref={mat} size={0.055} map={sprite} vertexColors transparent depthWrite={false} sizeAttenuation />
+        <pointsMaterial ref={mat} size={0.036} map={sprite} vertexColors transparent depthWrite={false} sizeAttenuation />
       </points>
     </group>
   )
@@ -329,7 +335,7 @@ export default function GlyphParticles({ onReady, onGlyphChange }: Props) {
     const fontReady = document.fonts?.load ? document.fonts.load(`800 196px ${FONT}`, chars).catch(() => {}) : Promise.resolve()
     Promise.race([fontReady, new Promise((r) => setTimeout(r, 2500))]).then(() => {
       if (cancelled) return
-      const count = window.innerWidth < 640 ? 1800 : 4200
+      const count = window.innerWidth < 640 ? 4000 : 10000
       setGlyphs(heroGlyphs.map((g) => sampleGlyph(g.kanji, count)))
       onReadyRef.current()
     })
