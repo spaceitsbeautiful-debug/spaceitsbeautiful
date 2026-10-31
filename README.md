@@ -2,6 +2,8 @@
 
 Portfolio personnel de Gounteni David, développeur full-stack.
 
+**En ligne : https://gounteni.vercel.app** (aussi sur https://spaceitsbeautiful-debug.github.io/spaceitsbeautiful/)
+
 ## Stack
 
 - React + TypeScript, Vite
@@ -26,6 +28,9 @@ Le site s'ouvre sur http://localhost:5173.
 - `public/` : images (avatar, captures dans `public/projects/`)
 
 ## Mise en ligne
+
+Le site est hébergé sur **Vercel** (projet `gounteni`) et sur GitHub Pages.
+
 
 Chaque push sur `main` déploie le site sur GitHub Pages
 (`.github/workflows/deploy.yml`). Dans les réglages du dépôt :
