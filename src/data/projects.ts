@@ -8,7 +8,7 @@ import type { Lang } from '../i18n'
 
 export type Category = 'demo' | 'web' | 'ia' | 'python' | 'jeux' | 'systemes' | 'design'
 
-export type ShowcaseId = 'focus' | 'kanji' | 'palette' | 'lueur'
+export type ShowcaseId = 'kageos' | 'focus' | 'kanji' | 'palette' | 'lueur'
 
 export const categories: { id: Category | 'all'; label: string; en: string }[] = [
   { id: 'all', label: 'Tous', en: 'All' },
@@ -54,25 +54,41 @@ export function localize(p: Project, lang: Lang): Project {
 
 export const projects: Project[] = [
   {
-    slug: 'kitsune',
-    categories: ['web', 'ia', 'python'],
-    confidential: true,
-    name: 'Projet Kitsune',
-    kind: 'Appli web · IA',
-    description: "Une application web qui mêle **IA** et **machine learning**, du modèle entraîné jusqu'à l'interface.",
-    summary: "Une application web full-stack avec de l'IA et un pipeline de machine learning. Les détails restent secrets pour l'instant.",
-    features: [],
-    role: 'Conception et développement full-stack',
-    tags: ['React', 'TypeScript', 'Node.js', 'Python', 'IA'],
+    slug: 'kage-os',
+    categories: ['demo', 'web', 'design'],
+    showcase: 'kageos',
+    name: '影OS',
+    kind: 'Web OS · Son',
+    description:
+      'Un **système d’exploitation rétro-futuriste** dans le navigateur : fenêtres, terminal, gestionnaire de fichiers, mini-jeux et un **générateur d’ambiance cyberpunk** 100 % synthétisé.',
+    summary:
+      'Un faux système d’exploitation complet qui tourne dans le navigateur, avec un écran de démarrage BIOS, un effet écran cathodique et des applications qui se parlent.',
+    features: [
+      'Démarrage façon BIOS, effet écran cathodique (CRT) et fonds d’écran au choix',
+      'Fenêtres déplaçables, redimensionnables et agrandissables, barre des tâches et menu démarrer',
+      'Ambiance : 7 couches de sons cyberpunk synthétisées avec la Web Audio API, avec visualisations en direct',
+      'Terminal avec de vraies commandes qui pilotent l’OS, et quelques easter eggs',
+      'Gestionnaire de fichiers, Notes, Kanji Quiz, Focus et le jeu Lueur',
+    ],
+    role: 'Conception, design et développement',
+    tags: ['React', 'TypeScript', 'Framer Motion', 'Web Audio', 'Canvas'],
     size: 'wide',
     featured: true,
+    links: { demo: 'https://kage-os-phi.vercel.app', code: 'https://github.com/spaceitsbeautiful-debug/kage-os' },
     en: {
-      name: 'Project Kitsune',
-      kind: 'Web app · AI',
-      description: 'A web app that blends **AI** and **machine learning**, from the trained model to the interface.',
-      summary: 'A full-stack web app with AI and a machine learning pipeline. The details stay secret for now.',
-      role: 'Full-stack design and development',
-      tags: ['React', 'TypeScript', 'Node.js', 'Python', 'AI'],
+      kind: 'Web OS · Sound',
+      description:
+        'A **retro-futuristic operating system** in the browser: windows, a terminal, a file manager, mini-games and a fully synthesized **cyberpunk ambience generator**.',
+      summary:
+        'A complete fake operating system running in the browser, with a BIOS boot screen, a CRT effect and apps that talk to each other.',
+      features: [
+        'BIOS-style boot, CRT screen effect and a choice of wallpapers',
+        'Draggable, resizable, maximizable windows, a taskbar and a start menu',
+        'Ambience: 7 cyberpunk sound layers synthesized with the Web Audio API, with live visualizations',
+        'Terminal with real commands that drive the OS, and a few easter eggs',
+        'File manager, Notes, Kanji Quiz, Focus and the Lueur game',
+      ],
+      role: 'Design and development',
     },
   },
   {
@@ -197,6 +213,27 @@ export const projects: Project[] = [
     },
   },
   {
+    slug: 'kitsune',
+    categories: ['web', 'ia', 'python'],
+    confidential: true,
+    name: 'Projet Kitsune',
+    kind: 'Appli web · IA',
+    description: "Une application web qui mêle **IA** et **machine learning**, du modèle entraîné jusqu'à l'interface.",
+    summary: "Une application web full-stack avec de l'IA et un pipeline de machine learning. Les détails restent secrets pour l'instant.",
+    features: [],
+    role: 'Conception et développement full-stack',
+    tags: ['React', 'TypeScript', 'Node.js', 'Python', 'IA'],
+    size: 'third',
+    en: {
+      name: 'Project Kitsune',
+      kind: 'Web app · AI',
+      description: 'A web app that blends **AI** and **machine learning**, from the trained model to the interface.',
+      summary: 'A full-stack web app with AI and a machine learning pipeline. The details stay secret for now.',
+      role: 'Full-stack design and development',
+      tags: ['React', 'TypeScript', 'Node.js', 'Python', 'AI'],
+    },
+  },
+  {
     slug: 'echo',
     categories: ['ia', 'python'],
     confidential: true,
@@ -207,7 +244,7 @@ export const projects: Project[] = [
     features: [],
     role: 'Conception et développement',
     tags: ['Python', 'IA', 'Voix'],
-    size: 'half',
+    size: 'third',
     en: {
       name: 'Project Echo',
       kind: 'Tool · Desktop',
@@ -228,7 +265,7 @@ export const projects: Project[] = [
     features: [],
     role: 'Développement frontend',
     tags: ['React', 'TypeScript', 'Tailwind CSS'],
-    size: 'half',
+    size: 'third',
     en: {
       name: 'Project Atlas',
       kind: 'Work · Frontend',
@@ -268,7 +305,7 @@ export const projects: Project[] = [
     features: [],
     role: 'Conception et spécification',
     tags: ['Architecture', 'Spécification'],
-    size: 'third',
+    size: 'half',
     en: {
       name: 'Project Relay',
       kind: 'System · Specification',
@@ -289,7 +326,7 @@ export const projects: Project[] = [
     features: [],
     role: 'Naming et identité visuelle',
     tags: ['Branding', 'UI'],
-    size: 'wide',
+    size: 'half',
     en: {
       name: 'Project Noir',
       kind: 'Design · Identity',
