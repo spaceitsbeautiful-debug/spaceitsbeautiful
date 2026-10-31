@@ -49,7 +49,7 @@ function ProjectCard({ project, index, size }: { project: Project; index: number
         }`}
       >
         <div className="mock w-[78%] transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]">
-          <Mock visual={p.visual} />
+          <Mock seed={p.slug} />
         </div>
       </motion.div>
 

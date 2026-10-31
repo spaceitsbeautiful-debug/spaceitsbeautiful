@@ -36,7 +36,7 @@ function Line({ children, alt = false, delay = 0 }: { children: ReactNode; alt?:
 // [French label, English label, French value, English value]
 const meta = [
   ['Actuellement', 'Currently', 'Matrix Industrie', 'Matrix Industrie'],
-  ['Projet phare', 'Main project', 'Nativia', 'Nativia'],
+  ['Projets', 'Projects', 'Web, IA, outils', 'Web, AI, tools'],
   ['Spécialité', 'Focus', 'Frontend & BDD', 'Frontend & databases'],
   ['Statut', 'Status', 'Ouvert aux projets', 'Open to projects'],
 ]
@@ -116,12 +116,12 @@ export default function Hero() {
           {t(
             <>
               Je construis des <strong>interfaces React</strong>, des <strong>API Node</strong> et des{' '}
-              <strong>outils en Python</strong>. Une appli pour apprendre l'éwé, un assistant vocal de bureau, un portail
-              client : j'aime les projets où le code sert{INVISIBLE_SIGNATURE} vraiment à quelqu'un.
+              <strong>outils en Python</strong>. Des applis web avec de l'IA, des outils de bureau, des interfaces pro :
+              j'aime les projets où le code sert{INVISIBLE_SIGNATURE} vraiment à quelqu'un.
             </>,
             <>
               I build <strong>React interfaces</strong>, <strong>Node APIs</strong> and <strong>Python tools</strong>. An
-              app to learn Ewe, a desktop voice assistant, a client portal: I like projects where the code is{INVISIBLE_SIGNATURE}{' '}
+              AI-powered web apps, desktop tools, professional interfaces: I like projects where the code is{INVISIBLE_SIGNATURE}{' '}
               actually useful to someone.
             </>,
           )}

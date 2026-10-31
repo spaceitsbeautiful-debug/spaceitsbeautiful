@@ -40,8 +40,8 @@ export default function Stack() {
         </div>
         <pre className="m-0 px-5 py-[18px] whitespace-pre">
           <span className="text-accent-2">david@matrix</span> <span className="text-muted">~/projets</span> $ ls{'\n'}
-          nativia/  kurumi/  optimus-save/  portail-matrix/{'\n'}
-          <span className="text-accent-2">david@matrix</span> <span className="text-muted">~/projets</span> $ cd nativia && npm run dev{'\n'}
+          kitsune/  echo/  vault/  atlas/  ███████/{'\n'}
+          <span className="text-accent-2">david@matrix</span> <span className="text-muted">~/projets</span> $ cd kitsune && npm run dev{'\n'}
           <span className="text-muted">  VITE ready in 412 ms</span>{'\n'}
           <span className="text-muted">  ➜  Local:</span> <span className="text-accent">http://localhost:5173/</span>
         </pre>

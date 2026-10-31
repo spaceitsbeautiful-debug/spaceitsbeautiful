@@ -146,7 +146,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
               className="visual visual-detail grid aspect-[4/3] max-w-full place-items-center overflow-hidden border border-line sm:aspect-[16/9]"
             >
               <div className="mock w-[min(78%,900px)]">
-                <Mock visual={p.visual} />
+                <Mock seed={p.slug} />
               </div>
             </motion.div>
 
@@ -171,17 +171,49 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
             )}
 
             <div className="grid gap-[clamp(40px,6vw,120px)] py-[clamp(48px,7vw,104px)] md:grid-cols-[1.5fr_1fr]">
-              <div className="min-w-0">
-                <h2 className="m-0 mb-6 font-display text-[clamp(26px,3vw,40px)] font-bold">{t('Ce que fait le projet', 'What it does')}</h2>
-                <ul className="m-0 grid list-none p-0">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex gap-4 border-t border-line py-4 text-[clamp(16px,1.2vw,18px)]">
-                      <span aria-hidden="true" className="mt-[.65em] size-1.5 flex-none rounded-full bg-accent" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {p.confidential ? (
+                <div className="grid min-w-0 content-start gap-4 rounded-[18px] border border-line bg-surface p-[clamp(20px,3vw,36px)]">
+                  <span className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.14em] text-accent">
+                    <span lang="ja" className="font-display text-lg font-bold tracking-normal">
+                      機密
+                    </span>
+                    {t('Projet confidentiel', 'Confidential project')}
+                  </span>
+                  <h2 className="m-0 font-display text-[clamp(24px,2.6vw,36px)] leading-tight font-bold">
+                    {t('Les détails restent dans l’ombre… pour l’instant.', 'The details stay in the shadows… for now.')}
+                  </h2>
+                  <p className="m-0 max-w-[36em] text-muted">
+                    {t(
+                      'Ce projet n’est pas encore public. Je peux en parler plus en détail lors d’un échange : écris-moi.',
+                      'This project is not public yet. I can talk about it in more detail in a conversation: get in touch.',
+                    )}
+                  </p>
+                  <a
+                    href="#contact"
+                    onClick={(e) => {
+                      // Close the project page first, then scroll to the contact section
+                      e.preventDefault()
+                      onClose()
+                      setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 450)
+                    }}
+                    className="mt-2 w-fit rounded-full bg-accent px-5 py-2.5 font-mono text-[13px] text-bg transition-transform hover:-translate-y-px"
+                  >
+                    {t('Me contacter', 'Contact me')} →
+                  </a>
+                </div>
+              ) : (
+                <div className="min-w-0">
+                  <h2 className="m-0 mb-6 font-display text-[clamp(26px,3vw,40px)] font-bold">{t('Ce que fait le projet', 'What it does')}</h2>
+                  <ul className="m-0 grid list-none p-0">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex gap-4 border-t border-line py-4 text-[clamp(16px,1.2vw,18px)]">
+                        <span aria-hidden="true" className="mt-[.65em] size-1.5 flex-none rounded-full bg-accent" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <dl className="m-0 grid min-w-0 content-start gap-7">
                 <div className="grid gap-1.5">
                   <dt className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-muted">{t('Rôle', 'Role')}</dt>

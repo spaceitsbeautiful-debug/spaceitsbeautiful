@@ -34,7 +34,7 @@ const PASSAGES = [
   },
   {
     title: 'Une autre langue',
-    text: "Chaque langue raconte une manière de voir le monde. Apprendre l'éwé, c'est découvrir des sons nouveaux, des proverbes anciens et une culture riche. Une application peut aider, mais rien ne remplace la curiosité et l'envie de comprendre.",
+    text: "Chaque langue raconte une manière de voir le monde. Apprendre le japonais, c'est découvrir des sons nouveaux, des proverbes anciens et une culture riche. Une application peut aider, mais rien ne remplace la curiosité et l'envie de comprendre.",
   },
   {
     title: 'Le bug',
@@ -78,7 +78,7 @@ const PASSAGES_EN = [
   },
   {
     title: 'Another language',
-    text: 'Every language tells a way of seeing the world. Learning Ewe means discovering new sounds, old proverbs and a rich culture. An app can help, but nothing replaces curiosity and the wish to understand.',
+    text: 'Every language tells a way of seeing the world. Learning Japanese means discovering new sounds, old proverbs and a rich culture. An app can help, but nothing replaces curiosity and the wish to understand.',
   },
   {
     title: 'The bug',

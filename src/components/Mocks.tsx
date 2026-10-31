@@ -1,188 +1,59 @@
-import { useMemo, type CSSProperties } from 'react'
-import type { Visual } from '../data/projects'
+import { useMemo } from 'react'
 import { useT } from '../i18n'
 
-// Illustrations drawn in HTML/CSS for each project card (styles in visuals.css).
+// Visual for a confidential project: blurred shapes that hint at an interface without showing
+// anything, a lock, and a 機密 ("confidential") stamp. The shapes are derived from the slug,
+// so each project gets its own look that never changes.
 
-function Nativia() {
+function hash(s: string) {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619)
+  return h >>> 0
+}
+
+export default function Mock({ seed }: { seed: string }) {
   const t = useT()
+  const blocks = useMemo(() => {
+    let h = hash(seed)
+    const rand = () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0) % 1000) / 1000
+    return Array.from({ length: 7 }, () => ({
+      left: `${Math.round(rand() * 70)}%`,
+      top: `${Math.round(rand() * 70)}%`,
+      width: `${Math.round(18 + rand() * 40)}%`,
+      height: `${Math.round(10 + rand() * 28)}%`,
+      strong: rand() > 0.6,
+    }))
+  }, [seed])
+
   return (
-    <div className="m-nativia">
-      <div className="nv-tiles">
-        {['Ɖ', 'Ɛ', 'Ƒ', 'Ɣ', 'Ŋ', 'Ɔ', 'Ʋ'].map((l) => (
-          <span key={l} className={l === 'Ɛ' ? 'on' : undefined}>
-            {l}
+    <div className="confidential relative aspect-[16/10] w-full">
+      {/* Blurred "interface" */}
+      <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[.8em] blur-[.9em]">
+        {blocks.map((b, i) => (
+          <span
+            key={i}
+            className={`absolute rounded-[.6em] ${b.strong ? 'bg-accent/45' : 'bg-fg/12'}`}
+            style={{ left: b.left, top: b.top, width: b.width, height: b.height }}
+          />
+        ))}
+      </div>
+      {/* Lock and stamp */}
+      <div className="absolute inset-0 grid place-items-center">
+        <div className="grid justify-items-center gap-[.8em]">
+          <span className="grid size-[3.6em] place-items-center rounded-full border border-line bg-surface/80 text-accent backdrop-blur">
+            <svg viewBox="0 0 24 24" className="size-[1.6em]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
           </span>
-        ))}
-      </div>
-      <div className="nv-chat">
-        <span className="mochi">
-          <i />
-          <i />
-        </span>
-        <p>
-          {t('On répète ensemble\u00a0? Écoute bien le son', "Let's repeat together? Listen to the sound")} <b>Ɛ</b>.
-        </p>
-      </div>
-      <div className="nv-progress">
-        <small>{t("Leçon 3 · L'alphabet éwé · 68 %", 'Lesson 3 · The Ewe alphabet · 68%')}</small>
-        <div className="bar">
-          <i style={{ width: '68%' }} />
+          <span className="flex items-center gap-[.6em] font-mono text-[.95em] uppercase tracking-[.2em] text-muted">
+            <span lang="ja" className="font-display text-[1.3em] font-bold tracking-normal text-accent">
+              機密
+            </span>
+            {t('Confidentiel', 'Confidential')}
+          </span>
         </div>
       </div>
     </div>
   )
-}
-
-function Kurumi() {
-  const t = useT()
-  const bars = useMemo(() => {
-    const n = 30
-    return Array.from({ length: n }, (_, i) => {
-      const env = Math.sin((i / (n - 1)) * Math.PI)
-      const h = Math.round(20 + env * 75 * (0.55 + 0.45 * Math.abs(Math.sin(i * 2.3))))
-      return { '--h': `${h}%`, '--d': `${(-(i * 0.13) % 1.1).toFixed(2)}s` } as CSSProperties
-    })
-  }, [])
-  return (
-    <div className="m-kurumi">
-      <div className="orb" />
-      <div className="wave">
-        {bars.map((style, i) => (
-          <i key={i} style={style} />
-        ))}
-      </div>
-      <p className="kr-cmd">{t('« Kurumi, ouvre VS Code »', '"Kurumi, open VS Code"')}</p>
-      <p className="kr-reply">{t("D'accord, j'ouvre VS Code.", 'Sure, opening VS Code.')}</p>
-    </div>
-  )
-}
-
-function Portal() {
-  const t = useT()
-  return (
-    <div className="m-portal">
-      <div className="pt-side">
-        <i />
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className="pt-main">
-        <b>{t('Tableau de bord', 'Dashboard')}</b>
-        <div className="pt-stats">
-          {[[t('Demandes', 'Requests'), 12], [t('En cours', 'Open'), 3], [t('Résolues', 'Solved'), 9]].map(([k, v]) => (
-            <div key={k}>
-              <small>{k}</small>
-              <b>{v}</b>
-            </div>
-          ))}
-        </div>
-        <div className="pt-chart">
-          {[35, 55, 42, 70, 60, 82, 95].map((h, i) => (
-            <i key={i} style={{ '--h': `${h}%` } as CSSProperties} />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Optimus() {
-  const rows: [string, number][] = [['projets/', 100], ['photos/', 100], ['documents/', 62]]
-  return (
-    <div className="m-optimus">
-      <div className="op-head">
-        <b>Optimus Save</b>
-        <small>Auto · 03:00</small>
-      </div>
-      <ul>
-        {rows.map(([name, pct]) => (
-          <li key={name}>
-            <span>{name}</span>
-            <div className="bar">
-              <i style={{ width: `${pct}%` }} />
-            </div>
-            <em>{pct === 100 ? '✓' : `${pct}%`}</em>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-/** 11×11 QR-looking grid with the three corner finder squares, fixed seed so it never changes. */
-function qrCells() {
-  const S = 11
-  let seed = 42
-  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647
-  const finder = (x: number, y: number) => {
-    for (const [fx, fy] of [[0, 0], [S - 4, 0], [0, S - 4]]) {
-      const dx = x - fx, dy = y - fy
-      if (dx >= 0 && dx < 4 && dy >= 0 && dy < 4) {
-        return dx === 0 || dy === 0 || dx === 3 || dy === 3 || ((dx === 1 || dx === 2) && (dy === 1 || dy === 2))
-      }
-    }
-    return null
-  }
-  const cells: boolean[] = []
-  for (let y = 0; y < S; y++) {
-    for (let x = 0; x < S; x++) {
-      const f = finder(x, y)
-      cells.push(f === null ? rand() > 0.52 : f)
-    }
-  }
-  return cells
-}
-
-function Queue() {
-  const t = useT()
-  const cells = useMemo(qrCells, [])
-  return (
-    <div className="m-queue">
-      <div className="ticket">
-        <small>{t('Votre ticket', 'Your ticket')}</small>
-        <b>A-042</b>
-        <span>{t('Guichet 3 · 4 personnes avant vous', 'Counter 3 · 4 people ahead of you')}</span>
-        <div className="qr">
-          {cells.map((on, i) => (
-            <i key={i} className={on ? 'on' : undefined} />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Kuro() {
-  const t = useT()
-  return (
-    <div className="m-kuro">
-      <div className="kt-head">
-        <span className="kt-logo">黒</span>
-        <b>Kuro-Talk</b>
-      </div>
-      <div className="kt-msg in">{t('On se retrouve à 18h\u00a0?', 'Meet at 6 pm?')}</div>
-      <div className="kt-msg out">{t("Ça marche, j'arrive.", "Sounds good, I'm coming.")}</div>
-      <div className="kt-msg in typing">
-        <i />
-        <i />
-        <i />
-      </div>
-    </div>
-  )
-}
-
-const mocks: Record<Visual, () => React.JSX.Element> = {
-  nativia: Nativia,
-  kurumi: Kurumi,
-  portal: Portal,
-  optimus: Optimus,
-  queue: Queue,
-  kuro: Kuro,
-}
-
-export default function Mock({ visual }: { visual: Visual }) {
-  const Component = mocks[visual]
-  return <Component />
 }

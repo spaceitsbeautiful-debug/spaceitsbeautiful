@@ -37,7 +37,7 @@ function ScrollProgress() {
 }
 
 export default function App() {
-  // The open project lives in the address (#nativia) so it can be linked and closed with "back"
+  // The open project lives in the address (#kitsune) so it can be linked and closed with "back"
   const [project, setProject] = useState(projectFromHash)
   const projectRef = useRef(project)
   projectRef.current = project

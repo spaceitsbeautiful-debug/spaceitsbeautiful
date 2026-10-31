@@ -1,11 +1,9 @@
 // To add a project: add an entry here. **text** is shown in bold.
-// `visual` picks the illustration drawn in components/Mocks.tsx.
-// `slug` is the link to its detail page (#nativia, #kurumi...): letters, digits and dashes only.
+// `slug` is the link to its detail page (#kitsune, #echo...): letters, digits and dashes only.
+// `confidential` projects show a code name, a blurred visual and no details.
 // Texts are in French; `en` holds the English version of the texts that change.
 
 import type { Lang } from '../i18n'
-
-export type Visual = 'nativia' | 'kurumi' | 'portal' | 'optimus' | 'queue' | 'kuro'
 
 export type Category = 'web' | 'ia' | 'python' | 'systemes' | 'design'
 
@@ -31,12 +29,13 @@ type Texts = {
 export type Project = Texts & {
   slug: string
   categories: Category[]
-  visual: Visual
   size: 'wide' | 'half' | 'third'
   featured?: boolean
+  /** Code name only, blurred visual, no features or links */
+  confidential?: boolean
   /** Buttons on the detail page, shown only when filled in */
   links?: { code?: string; demo?: string }
-  /** Screenshots for the detail page: put the files in public/projects/ and list them here, e.g. 'projects/nativia-1.png' */
+  /** Screenshots for the detail page: put the files in public/projects/ and list them here, e.g. 'projects/demo-1.png' */
   images?: string[]
   en: Partial<Texts>
 }
@@ -48,187 +47,126 @@ export function localize(p: Project, lang: Lang): Project {
 
 export const projects: Project[] = [
   {
-    slug: 'nativia',
+    slug: 'kitsune',
     categories: ['web', 'ia', 'python'],
-    name: 'Nativia',
+    confidential: true,
+    name: 'Projet Kitsune',
     kind: 'Appli web · IA',
-    description:
-      "Une application pour **apprendre l'éwé**, avec Mochi, un compagnon IA qui accompagne l'élève. Traduction par un modèle **Google mT5** entraîné dans un pipeline Python, et prononciation par synthèse vocale.",
-    summary:
-      "Nativia aide à apprendre l'éwé, une langue parlée au Togo et au Ghana, avec des leçons, la prononciation de chaque mot et un compagnon IA nommé Mochi.",
-    features: [
-      "Mochi, un compagnon IA qui accompagne l'élève pendant les leçons",
-      "Traduction de l'éwé par un modèle Google mT5, entraîné dans un pipeline Python",
-      'Prononciation des mots et des phrases par synthèse vocale ElevenLabs',
-      'Frontend React + TypeScript, API Express avec Prisma et SQLite',
-    ],
+    description: "Une application web qui mêle **IA** et **machine learning**, du modèle entraîné jusqu'à l'interface.",
+    summary: "Une application web full-stack avec de l'IA et un pipeline de machine learning. Les détails restent secrets pour l'instant.",
+    features: [],
     role: 'Conception et développement full-stack',
-    tags: ['React', 'TypeScript', 'Express', 'Prisma', 'SQLite', 'ElevenLabs', 'mT5'],
-    visual: 'nativia',
+    tags: ['React', 'TypeScript', 'Node.js', 'Python', 'IA'],
     size: 'wide',
     featured: true,
     en: {
+      name: 'Project Kitsune',
       kind: 'Web app · AI',
-      description:
-        'An app to **learn Ewe**, with Mochi, an AI companion that guides the learner. Translation by a **Google mT5** model trained in a Python pipeline, and pronunciation through speech synthesis.',
-      summary:
-        'Nativia helps people learn Ewe, a language spoken in Togo and Ghana, with lessons, the pronunciation of every word and an AI companion called Mochi.',
-      features: [
-        'Mochi, an AI companion that guides the learner through the lessons',
-        'Ewe translation by a Google mT5 model, trained in a Python pipeline',
-        'Pronunciation of words and sentences with ElevenLabs speech synthesis',
-        'React + TypeScript frontend, Express API with Prisma and SQLite',
-      ],
+      description: 'A web app that blends **AI** and **machine learning**, from the trained model to the interface.',
+      summary: 'A full-stack web app with AI and a machine learning pipeline. The details stay secret for now.',
       role: 'Full-stack design and development',
+      tags: ['React', 'TypeScript', 'Node.js', 'Python', 'AI'],
     },
   },
   {
-    slug: 'kurumi',
+    slug: 'echo',
     categories: ['ia', 'python'],
-    name: 'Kurumi',
-    kind: 'Assistant vocal · Bureau',
-    description:
-      'Un assistant vocal pour Windows : il écoute, comprend la demande grâce à **Google GenAI** et répond à voix haute, dans une interface sombre en CustomTkinter.',
-    summary:
-      'Kurumi est un assistant vocal pour le bureau Windows : on lui parle, il comprend la demande et répond à voix haute.',
-    features: [
-      'Reconnaissance de la voix avec SpeechRecognition',
-      'Compréhension des demandes et réponses générées par Google GenAI',
-      'Voix de synthèse avec Edge-TTS, sons joués avec Pygame',
-      'Interface de bureau sombre en CustomTkinter',
-    ],
+    confidential: true,
+    name: 'Projet Echo',
+    kind: 'Outil · Bureau',
+    description: "Un outil de bureau en **Python**, piloté par la **voix** et l'IA.",
+    summary: "Un outil de bureau en Python, piloté par la voix et l'IA. Les détails restent secrets pour l'instant.",
+    features: [],
     role: 'Conception et développement',
-    tags: ['Python', 'CustomTkinter', 'Edge-TTS', 'SpeechRecognition', 'Pygame'],
-    visual: 'kurumi',
+    tags: ['Python', 'IA', 'Voix'],
     size: 'half',
     en: {
-      kind: 'Voice assistant · Desktop',
-      description:
-        'A voice assistant for Windows: it listens, understands the request with **Google GenAI** and answers out loud, in a dark CustomTkinter interface.',
-      summary: 'Kurumi is a voice assistant for the Windows desktop: you talk to it, it understands and answers out loud.',
-      features: [
-        'Voice recognition with SpeechRecognition',
-        'Requests understood and answered by Google GenAI',
-        'Synthesized voice with Edge-TTS, sounds played with Pygame',
-        'Dark desktop interface built with CustomTkinter',
-      ],
+      name: 'Project Echo',
+      kind: 'Tool · Desktop',
+      description: 'A desktop tool in **Python**, driven by **voice** and AI.',
+      summary: 'A desktop tool in Python, driven by voice and AI. The details stay secret for now.',
       role: 'Design and development',
+      tags: ['Python', 'AI', 'Voice'],
     },
   },
   {
-    slug: 'portail-matrix',
+    slug: 'atlas',
     categories: ['web'],
-    name: 'Portail client Matrix',
+    confidential: true,
+    name: 'Projet Atlas',
     kind: 'Pro · Frontend',
-    description: "L'espace client de Matrix Industrie : tableau de bord, suivi des demandes et gestion de compte.",
-    summary: 'Le portail où les clients de Matrix Industrie retrouvent leurs informations et suivent leurs demandes.',
-    features: [
-      'Application React + TypeScript, construite avec Vite',
-      'Interface stylée avec Tailwind CSS',
-      'Développée dans le cadre de mon travail chez Matrix Industrie',
-    ],
+    description: 'Une application **professionnelle** développée dans le cadre de mon travail.',
+    summary: 'Une application professionnelle, développée dans le cadre de mon travail. Les détails sont confidentiels.',
+    features: [],
     role: 'Développement frontend',
-    tags: ['React', 'TypeScript', 'Vite', 'Tailwind CSS'],
-    visual: 'portal',
+    tags: ['React', 'TypeScript', 'Tailwind CSS'],
     size: 'half',
     en: {
-      name: 'Matrix client portal',
+      name: 'Project Atlas',
       kind: 'Work · Frontend',
-      description: "Matrix Industrie's client area: dashboard, request tracking and account management.",
-      summary: 'The portal where Matrix Industrie clients find their information and follow their requests.',
-      features: [
-        'React + TypeScript app, built with Vite',
-        'Interface styled with Tailwind CSS',
-        'Built as part of my job at Matrix Industrie',
-      ],
+      description: 'A **professional** app built as part of my job.',
+      summary: 'A professional app, built as part of my job. The details are confidential.',
       role: 'Frontend development',
     },
   },
   {
-    slug: 'optimus-save',
+    slug: 'vault',
     categories: ['web', 'systemes'],
-    name: 'Optimus Save',
+    confidential: true,
+    name: 'Projet Vault',
     kind: 'Outil · Cloud',
-    description: 'Gestion du stockage cloud avec **sauvegardes automatiques** programmées, pour ne plus jamais perdre un fichier.',
-    summary: 'Optimus Save gère un espace de stockage cloud et lance les sauvegardes tout seul, sans avoir à y penser.',
-    features: [
-      'Gestion des fichiers stockés dans le cloud',
-      'Sauvegardes automatiques programmées',
-      'Suivi de chaque sauvegarde, dossier par dossier',
-    ],
+    description: 'Un outil autour du **stockage** et de la **sauvegarde** dans le cloud.',
+    summary: 'Un outil autour du stockage et de la sauvegarde dans le cloud. Les détails restent secrets pour l’instant.',
+    features: [],
     role: 'Conception et développement',
     tags: ['Node.js', 'PostgreSQL'],
-    links: { code: 'https://github.com/spaceitsbeautiful-debug/optimus-save' },
-    visual: 'optimus',
     size: 'third',
     en: {
+      name: 'Project Vault',
       kind: 'Tool · Cloud',
-      description: 'Cloud storage management with scheduled **automatic backups**, so no file is ever lost.',
-      summary: 'Optimus Save manages cloud storage and runs the backups on its own, without you having to think about it.',
-      features: ['Management of files stored in the cloud', 'Scheduled automatic backups', 'Tracking of every backup, folder by folder'],
+      description: 'A tool around cloud **storage** and **backups**.',
+      summary: 'A tool around cloud storage and backups. The details stay secret for now.',
       role: 'Design and development',
     },
   },
   {
-    slug: 'file-attente',
+    slug: 'relay',
     categories: ['systemes'],
-    name: "File d'attente bancaire",
-    kind: 'Spécification',
-    description:
-      "Un système de gestion de file d'attente pour agence bancaire : tickets à **QR code**, impression thermique et appel des clients aux guichets.",
-    summary:
-      "La spécification complète d'un système de file d'attente pour agence bancaire, du ticket remis au client jusqu'à l'appel au guichet.",
-    features: [
-      'Billetterie avec QR code sur chaque ticket',
-      'Impression des tickets sur imprimante thermique',
-      'Appel des clients aux guichets',
-      'Document de spécification complet, prêt pour le développement',
-    ],
+    confidential: true,
+    name: 'Projet Relay',
+    kind: 'Système · Spécification',
+    description: 'La conception complète d’un **système**, du matériel au logiciel.',
+    summary: 'La conception complète d’un système, du matériel au logiciel. Les détails sont confidentiels.',
+    features: [],
     role: 'Conception et spécification',
-    tags: ['Architecture', 'QR code', 'Impression thermique'],
-    visual: 'queue',
+    tags: ['Architecture', 'Spécification'],
     size: 'third',
     en: {
-      name: 'Bank queue system',
-      kind: 'Specification',
-      description:
-        'A queue management system for a bank branch: **QR code** tickets, thermal printing and calling customers to the counters.',
-      summary: 'The full specification of a queue system for a bank branch, from the ticket handed to the customer to the call at the counter.',
-      features: [
-        'Ticketing with a QR code on every ticket',
-        'Tickets printed on a thermal printer',
-        'Customers called to the counters',
-        'Complete specification document, ready for development',
-      ],
+      name: 'Project Relay',
+      kind: 'System · Specification',
+      description: 'The full design of a **system**, from hardware to software.',
+      summary: 'The full design of a system, from hardware to software. The details are confidential.',
       role: 'Design and specification',
-      tags: ['Architecture', 'QR code', 'Thermal printing'],
+      tags: ['Architecture', 'Specification'],
     },
   },
   {
-    slug: 'kuro-talk',
+    slug: 'noir',
     categories: ['design'],
-    name: 'Kuro-Talk',
-    kind: 'Messagerie · Identité',
-    description: "Une application de messagerie, pour laquelle j'ai travaillé le nom et l'identité visuelle.",
-    summary: "Kuro-Talk est une application de messagerie. Sur ce projet, j'ai travaillé le nom et l'identité visuelle.",
-    features: [
-      'Recherche et choix du nom',
-      'Identité visuelle : logo et univers graphique',
-      'Une ambiance sombre, en lien avec « kuro », qui veut dire noir en japonais',
-    ],
+    confidential: true,
+    name: 'Projet Noir',
+    kind: 'Design · Identité',
+    description: 'Un travail de **naming** et d’**identité visuelle** pour une application.',
+    summary: 'Un travail de naming et d’identité visuelle pour une application. Les détails restent secrets pour l’instant.',
+    features: [],
     role: 'Naming et identité visuelle',
     tags: ['Branding', 'UI'],
-    visual: 'kuro',
     size: 'third',
     en: {
-      kind: 'Messaging · Identity',
-      description: 'A messaging app, for which I worked on the name and the visual identity.',
-      summary: 'Kuro-Talk is a messaging app. On this project, I worked on the name and the visual identity.',
-      features: [
-        'Research and choice of the name',
-        'Visual identity: logo and graphic world',
-        'A dark mood, tied to "kuro", which means black in Japanese',
-      ],
+      name: 'Project Noir',
+      kind: 'Design · Identity',
+      description: 'Naming and **visual identity** work for an app.',
+      summary: 'Naming and visual identity work for an app. The details stay secret for now.',
       role: 'Naming and visual identity',
     },
   },
