@@ -218,8 +218,8 @@ function Particles({ glyphs, index }: { glyphs: Float32Array[]; index: number })
     geom.current.attributes.color.needsUpdate = true
     mat.current.blending = col.dark ? THREE.AdditiveBlending : THREE.NormalBlending
     // Normal blending on a light page washes the soft dots out, so make them bigger and opaque there
-    mat.current.opacity = (col.dark ? 0.8 : 1) * (mobile ? 0.5 : 1)
-    mat.current.size = col.dark ? 0.036 : 0.048
+    mat.current.opacity = (col.dark ? 1 : 1) * (mobile ? 0.55 : 1)
+    mat.current.size = col.dark ? 0.042 : 0.05
     mat.current.needsUpdate = true
     invalidate()
   }, [theme, data, mobile, invalidate])
@@ -296,7 +296,7 @@ function Particles({ glyphs, index }: { glyphs: Float32Array[]; index: number })
           <bufferAttribute attach="attributes-position" args={[data.pos, 3]} />
           <bufferAttribute attach="attributes-color" args={[data.colors, 3]} />
         </bufferGeometry>
-        <pointsMaterial ref={mat} size={0.036} map={sprite} vertexColors transparent depthWrite={false} sizeAttenuation />
+        <pointsMaterial ref={mat} size={0.042} map={sprite} vertexColors transparent depthWrite={false} sizeAttenuation />
       </points>
     </group>
   )
