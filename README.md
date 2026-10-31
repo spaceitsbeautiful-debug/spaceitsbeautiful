@@ -31,9 +31,8 @@ Le site s'ouvre sur http://localhost:5173.
 
 Le site est hébergé sur **Vercel** (projet `gounteni`) et sur GitHub Pages.
 
-
-Chaque push sur `main` déploie le site sur GitHub Pages
-(`.github/workflows/deploy.yml`). Dans les réglages du dépôt :
+Chaque push sur `main` met les deux à jour automatiquement : Vercel grâce au dépôt
+connecté au projet, GitHub Pages grâce à `.github/workflows/deploy.yml`. Dans les réglages du dépôt :
 Settings > Pages > Source = « GitHub Actions ».
 
 ## Licence
