@@ -138,8 +138,9 @@ export const journey: { title: string; titleEn: string; text: string; textEn: st
   {
     title: "Aujourd'hui",
     titleEn: 'Today',
-    textEn: 'Confidential projects in progress, and this portfolio built with React and Three.js.',
-    text: 'Des projets confidentiels en cours, et ce portfolio en React et Three.js.',
-    tags: ['Node.js', 'Three.js', 'Framer Motion'],
+    textEn:
+      '影OS, a retro-futuristic operating system in the browser with a cyberpunk ambience generator, confidential projects in progress, and this portfolio built with React and Three.js.',
+    text: "影OS, un système d'exploitation rétro-futuriste dans le navigateur avec un générateur d'ambiance cyberpunk, des projets confidentiels en cours, et ce portfolio en React et Three.js.",
+    tags: ['影OS', 'Web Audio', 'Three.js', 'Framer Motion'],
   },
 ]

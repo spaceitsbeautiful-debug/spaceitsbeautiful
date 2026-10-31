@@ -33,10 +33,10 @@ function Line({ children, alt = false, delay = 0 }: { children: ReactNode; alt?:
   )
 }
 
-// [French label, English label, French value, English value]
-const meta = [
+// [French label, English label, French value, English value, optional link]
+const meta: [string, string, string, string, string?][] = [
   ['Actuellement', 'Currently', 'Matrix Industrie', 'Matrix Industrie'],
-  ['Projets', 'Projects', 'Web, IA, outils', 'Web, AI, tools'],
+  ['Projet phare', 'Main project', '影OS', '影OS', '#kage-os'],
   ['Spécialité', 'Focus', 'Frontend & BDD', 'Frontend & databases'],
   ['Statut', 'Status', 'Ouvert aux projets', 'Open to projects'],
 ]
@@ -127,10 +127,21 @@ export default function Hero() {
           )}
         </p>
         <dl className="m-0 grid min-w-0 grid-cols-2 gap-x-8 gap-y-[18px]">
-          {meta.map(([k, kEn, v, vEn]) => (
+          {meta.map(([k, kEn, v, vEn, href]) => (
             <div key={k} className="grid gap-1">
               <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{t(k, kEn)}</dt>
-              <dd className="m-0 text-[15px]">{t(v, vEn)}</dd>
+              <dd className="m-0 text-[15px]">
+                {href ? (
+                  <a href={href} className="group inline-flex items-center gap-1.5 text-accent">
+                    {t(v, vEn)}
+                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </a>
+                ) : (
+                  t(v, vEn)
+                )}
+              </dd>
             </div>
           ))}
         </dl>
