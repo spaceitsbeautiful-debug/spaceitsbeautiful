@@ -5,6 +5,7 @@ import { useLang, useT } from '../i18n'
 import { playSfx } from '../sound'
 import { startScroll, stopScroll } from '../smoothScroll'
 import Mock from './Mocks'
+import { showcases } from '../showcase'
 import { ease } from './ui'
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -138,17 +139,36 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
               </motion.p>
             </header>
 
-            <motion.div
-              layoutId={`visual-${p.slug}`}
-              aria-hidden="true"
-              style={{ borderRadius: 22 }}
-              transition={{ duration: 0.7, ease }}
-              className="visual visual-detail grid aspect-[4/3] max-w-full place-items-center overflow-hidden border border-line sm:aspect-[16/9]"
-            >
-              <div className="mock w-[min(78%,900px)]">
-                <Mock seed={p.slug} />
-              </div>
-            </motion.div>
+            {p.showcase ? (
+              // Public demo: the real app, usable right here
+              <motion.div
+                layoutId={`visual-${p.slug}`}
+                style={{ borderRadius: 22 }}
+                transition={{ duration: 0.7, ease }}
+                className="grid gap-4 border border-line bg-surface p-[clamp(14px,2.4vw,28px)]"
+              >
+                <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-accent">
+                  <span className="size-2 rounded-full bg-accent-2" />
+                  {t('Démo en direct · à tester ici', 'Live demo · try it here')}
+                </span>
+                {(() => {
+                  const Demo = showcases[p.showcase].Demo
+                  return <Demo key={p.slug} />
+                })()}
+              </motion.div>
+            ) : (
+              <motion.div
+                layoutId={`visual-${p.slug}`}
+                aria-hidden="true"
+                style={{ borderRadius: 22 }}
+                transition={{ duration: 0.7, ease }}
+                className="visual visual-detail grid aspect-[4/3] max-w-full place-items-center overflow-hidden border border-line sm:aspect-[16/9]"
+              >
+                <div className="mock w-[min(78%,900px)]">
+                  <Mock seed={p.slug} />
+                </div>
+              </motion.div>
+            )}
 
             {p.images && p.images.length > 0 && (
               <div className="mt-[clamp(16px,2vw,28px)] grid gap-[clamp(16px,2vw,28px)] sm:grid-cols-2">

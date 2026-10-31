@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { categories, localize, projects, type Category, type Project } from '../data/projects'
 import { useLang, useT } from '../i18n'
 import Mock from './Mocks'
+import { showcases } from '../showcase'
 import { Rich, Section, ease } from './ui'
 
 // 6-column grid: the wide card takes a full row, halves take 3, thirds take 2
@@ -49,7 +50,18 @@ function ProjectCard({ project, index, size }: { project: Project; index: number
         }`}
       >
         <div className="mock w-[78%] transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]">
-          <Mock seed={p.slug} />
+          {p.showcase ? (
+            (() => {
+              const Cover = showcases[p.showcase].Cover
+              return (
+                <div className="grid place-items-center">
+                  <Cover />
+                </div>
+              )
+            })()
+          ) : (
+            <Mock seed={p.slug} />
+          )}
         </div>
       </motion.div>
 
