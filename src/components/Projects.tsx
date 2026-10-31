@@ -4,6 +4,7 @@ import { categories, localize, projects, type Category, type Project } from '../
 import { useLang, useT } from '../i18n'
 import Mock from './Mocks'
 import { showcases } from '../showcase'
+import RotatingBadge from './RotatingBadge'
 import { Rich, Section, ease } from './ui'
 
 // 6-column grid: the wide card takes a full row, halves take 3, thirds take 2
@@ -136,6 +137,7 @@ export default function Projects() {
       title={t('Projets', 'Projects')}
       note={`${projects.length} ${t('projets', 'projects')} · 2025–2026`}
       reveal={false}
+      extra={<RotatingBadge className="hidden self-center md:block" />}
     >
       <div role="group" aria-label={t('Filtrer les projets', 'Filter projects')} className="mb-8 flex flex-wrap gap-2">
         {categories.map((c) => (

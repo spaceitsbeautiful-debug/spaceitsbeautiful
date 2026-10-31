@@ -28,12 +28,15 @@ export function Section({
   title,
   note,
   reveal = true,
+  extra,
   children,
 }: {
   id: string
   title: string
   note?: string
   reveal?: boolean
+  /** Shown between the title and the note (e.g. a badge) */
+  extra?: ReactNode
   children: ReactNode
 }) {
   return (
@@ -59,6 +62,7 @@ export function Section({
             <Scramble text={title} />
           </motion.span>
         </h2>
+        {extra}
         {note && (
           <motion.span
             className="font-mono text-[12.5px] text-muted"
